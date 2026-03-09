@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MailHub Collector
 
 Hệ thống quản lý và thu thập Email thời gian thực, tự động gửi Webhook tới N8N hoặc các dịch vụ khác.
@@ -27,3 +28,6 @@ Các file sau đã được đưa vào `.gitignore` để đảm bảo an toàn,
 - `accounts.json`: Chứa thông tin tài khoản email.
 - `config.json`: Chứa cấu hình riêng.
 - `notifications.json`: Lịch sử thông báo.
+=======
+# mailhub
+>>>>>>> 27654e5bac9afe95e46c3eb70d2b128eb5b74f7f
