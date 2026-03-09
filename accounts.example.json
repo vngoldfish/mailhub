@@ -1,0 +1,14 @@
+{
+    "accounts": [
+        {
+            "id": "acc_1",
+            "email": "example@gmail.com",
+            "appPassword": "your-encrypted-or-plain-app-password",
+            "authType": "app_password",
+            "enabled": true,
+            "imapHost": "imap.gmail.com",
+            "imapPort": 993,
+            "imapSecure": true
+        }
+    ]
+}

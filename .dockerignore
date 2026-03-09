@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+accounts.json
+config.json
+encryption.key
+notifications.json
+.git
+.gitignore
+README.md
+Dockerfile
+docker-compose.yml

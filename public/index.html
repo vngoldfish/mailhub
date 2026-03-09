@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MailHub Dashboard</title>
+  <meta name="description" content="MailHub Collector - Real-time email monitoring dashboard">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    :root {
+      --bg: #0a0e1a;
+      --bg2: #111827;
+      --card: #1a2035;
+      --card-h: #1f2847;
+      --input: #0d1225;
+      --brd: #2a3555;
+      --brd-f: #6366f1;
+      --t1: #f1f5f9;
+      --t2: #94a3b8;
+      --t3: #64748b;
+      --ac: #6366f1;
+      --ac-h: #818cf8;
+      --ac-g: rgba(99, 102, 241, 0.3);
+      --ok: #10b981;
+      --ok-bg: rgba(16, 185, 129, 0.12);
+      --warn: #f59e0b;
+      --warn-bg: rgba(245, 158, 11, 0.12);
+      --err: #ef4444;
+      --err-bg: rgba(239, 68, 68, 0.12);
+      --info: #3b82f6;
+      --info-bg: rgba(59, 130, 246, 0.12);
+      --r: 12px;
+      --rs: 8px;
+      --sh: 0 4px 24px rgba(0, 0, 0, 0.3);
+      --tr: all .25s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    body.light-mode {
+      --bg: #f8fafc;
+      --bg2: #ffffff;
+      --card: #ffffff;
+      --card-h: #f1f5f9;
+      --input: #f1f5f9;
+      --brd: #e2e8f0;
+      --t1: #0f172a;
+      --t2: #475569;
+      --t3: #94a3b8;
+      --sh: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--t1);
+      min-height: 100vh
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(800px 600px at 20% 10%, rgba(99, 102, 241, .08), transparent), radial-gradient(600px 400px at 80% 80%, rgba(16, 185, 129, .05), transparent);
+      pointer-events: none;
+      z-index: 0
+    }
+
+    body.light-mode::before {
+      background: radial-gradient(800px 600px at 20% 10%, rgba(99, 102, 241, .04), transparent), radial-gradient(600px 400px at 80% 80%, rgba(16, 185, 129, .03), transparent);
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px
+    }
+
+    /* Error Banner */
+    .error-banner {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--r);
+      padding: 14px 20px;
+      margin-bottom: 16px;
+      display: none;
+      animation: fadeIn .3s
+    }
+
+    .error-banner.show {
+      display: block
+    }
+
+    .error-banner-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--err);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .error-banner-list {
+      font-size: 12px;
+      color: #fca5a5;
+      line-height: 1.6
+    }
+
+    .error-banner-item {
+      padding: 2px 0
+    }
+
+    /* Header */
+    .hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 28px;
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      margin-bottom: 24px
+    }
+
+    .hdr-l {
+      display: flex;
+      align-items: center;
+      gap: 16px
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--ac), #a78bfa);
+      border-radius: var(--rs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 16px var(--ac-g)
+    }
+
+    .hdr h1 {
+      font-size: 20px;
+      font-weight: 700
+    }
+
+    .hdr p {
+      font-size: 13px;
+      color: var(--t2);
+      margin-top: 2px
+    }
+
+    /* Notification Bell */
+    .notif-wrapper {
+      position: relative;
+    }
+
+    .notif-bell {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--input);
+      border: 1px solid var(--brd);
+      color: var(--t2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: var(--tr);
+      position: relative;
+    }
+
+    .notif-bell:hover {
+      background: var(--card-h);
+      color: var(--t1);
+      border-color: var(--ac);
+    }
+
+    .notif-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--err);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      border-radius: 10px;
+      border: 2px solid var(--card);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notif-badge.on {
+      display: flex;
+    }
+
+    .notif-dd {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      width: 320px;
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: fi .2s;
+    }
+
+    .notif-dd.on {
+      display: flex;
+    }
+
+    .notif-h {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--brd);
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notif-list {
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .notif-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(42, 53, 85, 0.4);
+      display: flex;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .notif-item:hover {
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    .notif-ic {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--input);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .notif-c {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notif-t {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--t1);
+      margin-bottom: 2px;
+    }
+
+    .notif-m {
+      font-size: 11px;
+      color: var(--t3);
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      white-space: pre-wrap;
+    }
+
+    .notif-d {
+      font-size: 10px;
+      color: var(--t3);
+      margin-top: 4px;
+    }
+
+    .notif-empty {
+      padding: 30px 16px;
+      text-align: center;
+      color: var(--t3);
+      font-size: 13px;
+    }
+
+    .ws-s {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500
+    }
+
+    .ws-s.on {
+      background: var(--ok-bg);
+      color: var(--ok)
+    }
+
+    .ws-s.off {
+      background: var(--err-bg);
+      color: var(--err)
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .4
+      }
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px
+    }
+
+    .sc {
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      padding: 18px 22px;
+      transition: var(--tr);
+      position: relative;
+      overflow: hidden
+    }
+
+    .sc::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px
+    }
+
+    .sc:nth-child(1)::before {
+      background: linear-gradient(90deg, var(--ac), #a78bfa)
+    }
+
+    .sc:nth-child(2)::before {
+      background: linear-gradient(90deg, var(--ok), #34d399)
+    }
+
+    .sc:nth-child(3)::before {
+      background: linear-gradient(90deg, var(--info), #60a5fa)
+    }
+
+    .sc:nth-child(4)::before {
+      background: linear-gradient(90deg, var(--warn), #fbbf24)
+    }
+
+    .sc:hover {
+      border-color: var(--brd-f);
+      transform: translateY(-2px);
+      box-shadow: var(--sh)
+    }
+
+    .sc-l {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px
+    }
+
+    .sc-v {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -1px
+    }
+
+    .sc:nth-child(1) .sc-v {
+      color: var(--ac)
+    }
+
+    .sc:nth-child(2) .sc-v {
+      color: var(--ok)
+    }
+
+    .sc:nth-child(3) .sc-v {
+      color: var(--info)
+    }
+
+    .sc:nth-child(4) .sc-v {
+      color: var(--warn)
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px
+    }
+
+    @media(max-width:900px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      overflow: hidden
+    }
+
+    .card-h {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--brd);
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .card-h h2 {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap
+    }
+
+    .card-b {
+      padding: 16px 22px
+    }
+
+    /* Search + Filter Bar */
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 120px;
+      padding: 8px 12px;
+      background: var(--input);
+      border: 1px solid var(--brd);
+      border-radius: var(--rs);
+      color: var(--t1);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: var(--tr)
+    }
+
+    .search-box:focus {
+      border-color: var(--ac);
+      box-shadow: 0 0 0 3px var(--ac-g)
+    }
+
+    .filter-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--brd);
+      border-radius: var(--rs);
+      background: transparent;
+      color: var(--t3);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--tr);
+      white-space: nowrap
+    }
+
+    .filter-btn:hover {
+      border-color: var(--t2);
+      color: var(--t2)
+    }
+
+    .filter-btn.active {
+      background: var(--ac);
+      border-color: var(--ac);
+      color: white
+    }
+
+    .rows-select {
+      background: var(--input);
+      border: 1px solid var(--brd);
+      color: var(--t2);
+      font-size: 11px;
+      padding: 6px 8px;
+      border-radius: var(--rs);
+      cursor: pointer;
+      outline: none;
+      transition: var(--tr);
+    }
+
+    .rows-select:focus {
+      border-color: var(--ac);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--input);
+      border-radius: var(--rs);
+      margin-bottom: 14px
+    }
+
+    .tab {
+      flex: 1;
+      padding: 7px 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--tr);
+      background: transparent;
+      color: var(--t3);
+      text-align: center
+    }
+
+    .tab:hover {
+      color: var(--t2)
+    }
+
+    .tab.on {
+      background: var(--ac);
+      color: white;
+      box-shadow: 0 2px 8px var(--ac-g)
+    }
+
+    /* Account */
+    .acc {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--input);
+      border: 1px solid var(--brd);
+      border-radius: var(--rs);
+      margin-bottom: 8px;
+      transition: var(--tr);
+      cursor: pointer;
+      gap: 8px
+    }
+
+    .acc:hover {
+      border-color: var(--ac);
+      background: var(--card-h)
+    }
+
+    .acc.on {
+      border-color: var(--ac);
+      box-shadow: 0 0 0 2px var(--ac-g)
+    }
+
+    .acc-i {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0
+    }
+
+    .acc-av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--ac), #a78bfa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0
+    }
+
+    .acc-e {
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .acc-id {
+      font-size: 10px;
+      color: var(--t3);
+      font-family: monospace
+    }
+
+    .acc-s {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap
+    }
+
+    .acc-s.connected {
+      background: var(--ok-bg);
+      color: var(--ok)
+    }
+
+    .acc-s.error {
+      background: var(--err-bg);
+      color: var(--err)
+    }
+
+    .acc-s.stopped {
+      background: rgba(148, 163, 184, .1);
+      color: var(--t3)
+    }
+
+    .acc-s.connecting {
+      background: var(--warn-bg);
+      color: var(--warn)
+    }
+
+    .acc-a {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border: none;
+      border-radius: var(--rs);
+      font-size: 12px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--tr);
+      white-space: nowrap
+    }
+
+    .btn:active {
+      transform: scale(.96)
+    }
+
+    .btn-p {
+      background: linear-gradient(135deg, var(--ac), #818cf8);
+      color: white;
+      box-shadow: 0 2px 8px var(--ac-g)
+    }
+
+    .btn-p:hover {
+      box-shadow: 0 4px 16px var(--ac-g);
+      transform: translateY(-1px)
+    }
+
+    .btn-ok {
+      background: var(--ok-bg);
+      color: var(--ok);
+      border: 1px solid rgba(16, 185, 129, .2)
+    }
+
+    .btn-d {
+      background: var(--err-bg);
+      color: var(--err);
+      border: 1px solid rgba(239, 68, 68, .2)
+    }
+
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 11px
+    }
+
+    .btn-ic {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 6px;
+      font-size: 12px
+    }
+
+    /* Email */
+    .el {
+      max-height: 500px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--brd) transparent
+    }
+
+    .el::-webkit-scrollbar {
+      width: 5px
+    }
+
+    .el::-webkit-scrollbar-thumb {
+      background: var(--brd);
+      border-radius: 3px
+    }
+
+    .ei {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(42, 53, 85, .4);
+      cursor: pointer;
+      transition: background .15s;
+      animation: fi .3s
+    }
+
+    .ei:hover {
+      background: rgba(99, 102, 241, .06)
+    }
+
+    .ei.ur {
+      border-left: 3px solid var(--ac)
+    }
+
+    .ei.ur .e-s {
+      font-weight: 600;
+      color: var(--t1)
+    }
+
+    .e-ic {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .e-c {
+      flex: 1;
+      min-width: 0
+    }
+
+    .e-s {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--t2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px
+    }
+
+    .ei-m {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 11px;
+      margin-top: 6px;
+    }
+
+    .ei-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--t3);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .ei-row .label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--t2);
+      background: var(--input);
+      padding: 1px 4px;
+      border-radius: 3px;
+      min-width: 32px;
+      text-align: center;
+    }
+
+    .ei-row .val {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--t2);
+    }
+
+    .ei-row.to .val {
+      color: var(--ac);
+      font-weight: 500;
+    }
+
+    .e-badge {
+      background: var(--info-bg);
+      color: var(--info);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 600
+    }
+
+    .e-time {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--t3);
+    }
+
+    @keyframes fi {
+      from {
+        opacity: 0;
+        transform: translateY(-3px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* Pagination */
+    .pager {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--brd)
+    }
+
+    .pager-btn {
+      padding: 5px 10px;
+      border: 1px solid var(--brd);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--t2);
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .pager-btn:hover {
+      border-color: var(--ac);
+      color: var(--ac)
+    }
+
+    .pager-btn.on {
+      background: var(--ac);
+      border-color: var(--ac);
+      color: white
+    }
+
+    .pager-btn:disabled {
+      opacity: .3;
+      cursor: default
+    }
+
+    .pager-info {
+      font-size: 11px;
+      color: var(--t3)
+    }
+
+    /* Spinner/Empty */
+    .spin {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--brd);
+      border-top-color: var(--ac);
+      border-radius: 50%;
+      animation: sp .7s linear infinite
+    }
+
+    @keyframes sp {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .ld {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 16px;
+      gap: 10px;
+      color: var(--t3);
+      font-size: 12px
+    }
+
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 16px;
+      text-align: center
+    }
+
+    .empty .ei-c {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: .5
+    }
+
+    .empty p {
+      color: var(--t3);
+      font-size: 13px
+    }
+
+    /* Modal */
+    .mo {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center
+    }
+
+    .mo.on {
+      display: flex
+    }
+
+    .md {
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      width: 100%;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .4);
+      animation: mi .25s
+    }
+
+    .md-s {
+      max-width: 440px
+    }
+
+    .md-l {
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column
+    }
+
+    @keyframes mi {
+      from {
+        opacity: 0;
+        transform: scale(.95) translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .md-h {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--brd);
+      flex-shrink: 0
+    }
+
+    .md-h h3 {
+      font-size: 15px;
+      font-weight: 600;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1
+    }
+
+    .md-x {
+      background: none;
+      border: none;
+      color: var(--t3);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: var(--tr);
+      flex-shrink: 0;
+      margin-left: 10px
+    }
+
+    .md-x:hover {
+      background: var(--input);
+      color: var(--t1)
+    }
+
+    .md-b {
+      padding: 18px 22px;
+      overflow-y: auto;
+      flex: 1
+    }
+
+    .md-f {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 14px 22px;
+      border-top: 1px solid var(--brd);
+      flex-shrink: 0
+    }
+
+    /* Form */
+    .fg {
+      margin-bottom: 12px
+    }
+
+    .fl {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t2);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    .fi {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--input);
+      border: 1px solid var(--brd);
+      border-radius: var(--rs);
+      color: var(--t1);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: var(--tr)
+    }
+
+    .fi:focus {
+      border-color: var(--ac);
+      box-shadow: 0 0 0 3px var(--ac-g)
+    }
+
+    /* Email Detail */
+    .ed-r {
+      display: flex;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(42, 53, 85, .3);
+      font-size: 12px
+    }
+
+    .ed-l {
+      color: var(--t3);
+      font-weight: 600;
+      min-width: 50px;
+      text-transform: uppercase;
+      font-size: 10px;
+      padding-top: 2px
+    }
+
+    .ed-v {
+      color: var(--t1);
+      word-break: break-word
+    }
+
+    .ed-body {
+      background: var(--input);
+      border: 1px solid var(--brd);
+      border-radius: var(--rs);
+      padding: 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--t2);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 360px;
+      overflow-y: auto
+    }
+
+    .ed-body.html {
+      white-space: normal
+    }
+
+    .att {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px
+    }
+
+    .att-c {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      background: var(--input);
+      border: 1px solid var(--brd);
+      border-radius: 999px;
+      font-size: 11px;
+      color: var(--t2)
+    }
+
+    /* Toast */
+    .tc {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none
+    }
+
+    .tt {
+      min-width: 320px;
+      max-width: 400px;
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      pointer-events: auto;
+      animation: toastIn .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      gap: 12px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .tt::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px
+    }
+
+    .tt.ok::after {
+      background: var(--ok)
+    }
+
+    .tt.er::after {
+      background: var(--err)
+    }
+
+    .tt.in::after {
+      background: var(--info)
+    }
+
+    .tt-ic {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--ac), #a78bfa);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px var(--ac-g)
+    }
+
+    .tt-ic.sys {
+      background: var(--input);
+      border-radius: 10px;
+      color: inherit;
+      box-shadow: none;
+      font-size: 20px
+    }
+
+    .tt-c {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center
+    }
+
+    .tt-t {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--t1);
+      margin-bottom: 3px
+    }
+
+    .tt-m {
+      font-size: 12px;
+      color: var(--t2);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      white-space: pre-wrap
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(50px) scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    @keyframes toastOut {
+      from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(20px) scale(0.95);
+      }
+    }
+
+    @media(max-width:600px) {
+      .app {
+        padding: 12px
+      }
+
+      .hdr {
+        flex-direction: column;
+        gap: 12px
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- Error Banner -->
+    <div class="error-banner" id="errorBanner">
+      <div class="error-banner-title">⚠️ Cảnh báo — Có tài khoản bị lỗi kết nối</div>
+      <div class="error-banner-list" id="errorBannerList"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="hdr">
+      <div class="hdr-l">
+        <div class="logo">📧</div>
+        <div>
+          <h1>MailHub Dashboard</h1>
+          <p>Real-time Email Monitoring & Webhook Delivery</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end">
+        <button class="notif-bell" id="themeBtn" onclick="toggleTheme()" title="Đổi giao diện">🌓</button>
+        <div class="notif-wrapper">
+          <button class="notif-bell" id="notifBell" onclick="toggleNotif()">
+            🔔
+            <div class="notif-badge" id="notifBadge">0</div>
+          </button>
+          <div class="notif-dd" id="notifDD">
+            <div class="notif-h">
+              <span>Thông báo gần đây</span>
+            </div>
+            <div class="notif-list" id="notifList">
+              <div class="notif-empty">Không có thông báo mới</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-sm" style="background:var(--input);border:1px solid var(--brd);color:var(--t2)"
+          onclick="openLogs()">📜 Logs</button>
+        <button class="btn btn-sm" style="background:var(--input);border:1px solid var(--brd);color:var(--t2)"
+          onclick="openCfg()">⚙️ Cài đặt</button>
+        <div class="ws-s off" id="wsS"><span class="dot"></span><span id="wsT">Đang kết nối...</span></div>
+      </div>
+    </header>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="sc">
+        <div class="sc-l">Tài khoản hoạt động</div>
+        <div class="sc-v" id="sA">0</div>
+      </div>
+      <div class="sc">
+        <div class="sc-l">Email đã xử lý</div>
+        <div class="sc-v" id="sE">0</div>
+      </div>
+      <div class="sc">
+        <div class="sc-l">Webhook thành công</div>
+        <div class="sc-v" id="sW">0</div>
+      </div>
+      <div class="sc">
+        <div class="sc-l">Webhook thất bại</div>
+        <div class="sc-v" id="sF">0</div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid">
+      <!-- Left: Accounts -->
+      <div class="card">
+        <div class="card-h">
+          <h2>👤 Tài khoản</h2>
+          <button class="btn btn-p btn-sm" onclick="openAdd()">＋ Thêm</button>
+        </div>
+        <div class="card-b">
+          <div class="toolbar">
+            <input class="search-box" id="accSearch" placeholder="🔍 Tìm..." oninput="onAccSearch()">
+            <select class="rows-select" id="accLimitSelect" onchange="onAccLimitChange()" title="Số hàng mỗi trang">
+              <option value="10" selected>10 hàng</option>
+              <option value="20">20 hàng</option>
+              <option value="50">50 hàng</option>
+            </select>
+          </div>
+          <div class="toolbar">
+            <button class="filter-btn active" data-f="all" onclick="setAccFilter('all')">Tất cả</button>
+            <button class="filter-btn" data-f="connected" onclick="setAccFilter('connected')">🟢 OK</button>
+            <button class="filter-btn" data-f="error" onclick="setAccFilter('error')">🔴 Lỗi</button>
+            <button class="filter-btn" data-f="stopped" onclick="setAccFilter('stopped')">⚫ Dừng</button>
+          </div>
+          <div id="accList">
+            <div class="ld">
+              <div class="spin"></div>Đang tải...
+            </div>
+          </div>
+          <div id="accPager"></div>
+        </div>
+      </div>
+
+      <!-- Right: Emails -->
+      <div class="card">
+        <div class="card-h">
+          <h2 id="rpT">📬 Hộp thư đến</h2>
+          <span id="rpS" style="font-size:11px;color:var(--t3)"></span>
+        </div>
+        <div class="card-b" style="padding:12px 22px 0">
+          <div class="tabs">
+            <button class="tab on" id="tAll" onclick="swTab('all')">📨 Tất cả hộp thư</button>
+            <button class="tab" id="tAcc" onclick="swTab('account')">👤 Theo tài khoản</button>
+          </div>
+        </div>
+        <div style="padding:0" id="rpB">
+          <div class="ld">
+            <div class="spin"></div>Đang tải...
+          </div>
+        </div>
+        <div id="emailPager"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs Modal -->
+  <div class="mo" id="logsMo">
+    <div class="md md-l">
+      <div class="md-h">
+        <h3>📜 System Logs</h3><button class="md-x" onclick="closeLogs()">✕</button>
+      </div>
+      <div class="md-b"
+        style="background:#0a0e1a;padding:12px;font-family:monospace;font-size:11px;color:#cbd5e1;height:400px;overflow-y:auto;border-radius:4px"
+        id="logsB">
+        <div class="ld">
+          <div class="spin"></div>Đang tải...
+        </div>
+      </div>
+      <div class="md-f">
+        <button class="btn btn-d btn-sm" onclick="clearLogs()">Xóa logs</button>
+        <button class="btn btn-p btn-sm" onclick="loadLogs()">🔄 Làm mới</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="mo" id="cfgMo">
+    <div class="md md-s">
+      <div class="md-h">
+        <h3>⚙️ Cài đặt hệ thống</h3><button class="md-x" onclick="closeCfg()">✕</button>
+      </div>
+      <div class="md-b">
+        <div class="fg">
+          <label class="fl">Webhook URL (n8n)</label>
+          <input class="fi" id="cWebhook" placeholder="https://n8n.example.com/webhook/...">
+        </div>
+
+      </div>
+      <div class="md-f">
+        <button class="btn btn-d btn-sm" onclick="closeCfg()">Hủy</button>
+        <button class="btn btn-p btn-sm" onclick="saveCfg()">Lưu cài đặt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Modal -->
+  <div class="mo" id="addMo">
+    <div class="md md-s">
+      <div class="md-h">
+        <h3>➕ Thêm tài khoản</h3><button class="md-x" onclick="closeAdd()">✕</button>
+      </div>
+      <div class="md-b">
+        <div class="fg">
+          <label class="fl">Email</label>
+          <input class="fi" id="nE" type="email" placeholder="example@gmail.com">
+        </div>
+        <div class="fg">
+          <label class="fl">Loại xác thực</label>
+          <select class="fi" id="nAuthType" onchange="onAuthTypeChange()">
+            <option value="app_password">App Password (Khuyên dùng)</option>
+            <option value="password">Mật khẩu chính (Dành cho mail không 2FA)</option>
+            <option value="cookie">Cookie / Token</option>
+          </select>
+        </div>
+
+        <div id="authPassField">
+          <div class="fg">
+            <label class="fl" id="nPLab">Mật khẩu</label>
+            <input class="fi" id="nP" type="password" placeholder="Nhập mật khẩu...">
+          </div>
+        </div>
+
+        <div id="authCookieField" style="display:none">
+          <div class="fg">
+            <label class="fl">Cookie / JSON String</label>
+            <textarea class="fi" id="nC" rows="3" placeholder="Dán cookie tại đây..."></textarea>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Nhà cung cấp</label>
+          <select class="fi" id="nPreset" onchange="onPresetChange()">
+            <option value="gmail">Gmail</option>
+            <option value="outlook">Outlook / Hotmail</option>
+            <option value="yahoo">Yahoo Mail</option>
+            <option value="icloud">iCloud Mail</option>
+            <option value="zoho">Zoho Mail</option>
+            <option value="yandex">Yandex Mail</option>
+            <option value="custom">Tùy chỉnh (IMAP)</option>
+          </select>
+        </div>
+
+        <div id="customImapFields"
+          style="display:none; border-top: 1px solid var(--brd); padding-top: 12px; margin-top: 12px;">
+          <div class="fg">
+            <label class="fl">IMAP Host</label>
+            <input class="fi" id="nH" placeholder="imap.example.com">
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div class="fg">
+              <label class="fl">Port</label>
+              <input class="fi" id="nPo" type="number" value="993">
+            </div>
+            <div class="fg">
+              <label class="fl">Secure (SSL)</label>
+              <select class="fi" id="nS">
+                <option value="true">Có (SSL/TLS)</option>
+                <option value="false">Không (No SSL)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <p style="font-size:11px;color:var(--t3);margin-top:12px">🔒 Mật khẩu sẽ được mã hóa AES-256-GCM</p>
+      </div>
+      <div class="md-f"><button class="btn btn-d btn-sm" onclick="closeAdd()">Hủy</button><button class="btn btn-p"
+          onclick="doAdd()">Thêm & Bắt đầu</button></div>
+    </div>
+  </div>
+
+  <!-- Email Detail Modal -->
+  <div class="mo" id="emMo">
+    <div class="md md-l">
+      <div class="md-h">
+        <h3 id="emT">📧 Chi tiết</h3><button class="md-x" onclick="closeEm()">✕</button>
+      </div>
+      <div class="md-b" id="emB">
+        <div class="ld">
+          <div class="spin"></div>Đang tải...
+        </div>
+      </div>
+      <div class="md-f"><button class="btn btn-d btn-sm" onclick="closeEm()">Đóng</button></div>
+    </div>
+  </div>
+
+  <div class="tc" id="tc"></div>
+
+  <script>
+    let ws, wS = {}, selAcc = null, curTab = 'all', accPage = 1,
+      accLimit = parseInt(localStorage.getItem('mailhub_acc_limit') || '10'),
+      accFilter = 'all', accSearchQ = '', emailPage = 1, inboxLoaded = false;
+    let notifications = [];
+
+    // ── Utils ──
+    const $ = id => document.getElementById(id);
+    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML }
+    function toast(title, msg, type = 'in', extra = {}) {
+      const icons = { ok: '✅', er: '❌', in: 'ℹ️', mail: '📩' };
+      const c = $('tc'), d = document.createElement('div');
+      d.className = `tt ${type}`;
+
+      const icon = icons[type === 'ok' && (title.includes('Email') || title.includes('Mới')) ? 'mail' : type] || '🔔';
+      let avatarHtml = `<div class="tt-ic sys">${icon}</div>`;
+      if (extra.email) {
+        const initial = extra.email[0].toUpperCase();
+        avatarHtml = `<div class="tt-ic">${initial}</div>`;
+      }
+
+      d.innerHTML = `
+        ${avatarHtml}
+        <div class="tt-c">
+          <div class="tt-t">${esc(title)}</div>
+          <div class="tt-m">${esc(msg)}</div>
+        </div>
+      `;
+      c.appendChild(d);
+
+      // Facebook-style History tracking
+      addNotifHistory(title, msg, type, extra.email);
+
+      setTimeout(() => {
+        d.style.animation = 'toastOut .3s forwards';
+        setTimeout(() => d.remove(), 300);
+      }, 5000);
+    }
+
+    function addNotifHistory(title, message, type, email) {
+      const icons = { ok: '✅', er: '❌', in: 'ℹ️', mail: '📩' };
+      const icon = icons[type === 'ok' && (title.includes('Email') || title.includes('Mới')) ? 'mail' : type] || '🔔';
+      notifications.unshift({ title, message, type, icon, email, date: new Date().toISOString() });
+      if (notifications.length > 10) notifications.pop();
+      updateNotifUI();
+    }
+
+    async function loadNotifs() {
+      try {
+        const r = await api('/notifications');
+        if (r.notifications) {
+          notifications = r.notifications;
+          updateNotifUI(true); // silent update
+        }
+      } catch (e) { notifications = []; }
+    }
+
+    function toggleNotif() {
+      const isOpen = $('notifDD').classList.toggle('on');
+      if (isOpen) {
+        updBadgeCount(0);
+      }
+    }
+
+    let unreadNotifCount = parseInt(localStorage.getItem('mailhub_unread') || '0');
+    function updateNotifUI(silent = false) {
+      const l = $('notifList');
+      if (notifications.length === 0) {
+        l.innerHTML = '<div class="notif-empty">Không có thông báo mới</div>';
+        updBadgeCount(0);
+        return;
+      }
+
+      l.innerHTML = notifications.map(n => {
+        const icons = { ok: '✅', er: '❌', in: 'ℹ️', mail: '📩' };
+        const icon = n.icon || icons[n.type] || '🔔';
+        let av = `<div class="notif-ic" style="background:var(--input)">${icon}</div>`;
+        if (n.email) {
+          const ini = n.email[0].toUpperCase();
+          av = `<div class="notif-ic" style="background:linear-gradient(135deg, var(--ac), #a78bfa);color:white;font-weight:700">${ini}</div>`;
+        }
+        return `
+          <div class="notif-item">
+            ${av}
+            <div class="notif-c">
+              <div class="notif-t">${esc(n.title || n.t)}</div>
+              <div class="notif-m">${esc(n.message || n.m)}</div>
+              <div class="notif-d">${fmtDate(n.date)}</div>
+            </div>
+          </div>
+        `}).join('');
+
+      if (!silent && !$('notifDD').classList.contains('on')) {
+        unreadNotifCount++;
+        updBadgeCount(unreadNotifCount);
+      } else if (silent) {
+        updBadgeCount(unreadNotifCount); // Initial load sync
+      }
+    }
+
+    function updBadgeCount(c) {
+      unreadNotifCount = c;
+      localStorage.setItem('mailhub_unread', c);
+      const b = $('notifBadge');
+      b.textContent = c;
+      b.classList.toggle('on', c > 0);
+    }
+
+    // Close dropdown when picking outside
+    document.addEventListener('click', e => {
+      const b = $('notifBell'), dd = $('notifDD');
+      if (b && dd && !b.contains(e.target) && !dd.contains(e.target)) {
+        dd.classList.remove('on');
+      }
+    });
+    async function api(p, m = 'GET', b = null) { const o = { method: m, headers: {} }; if (b) { o.headers['content-type'] = 'application/json'; o.body = JSON.stringify(b) } return (await fetch(`/api${p}`, o)).json() }
+    function fmtDate(iso) { try { const d = new Date(iso), n = new Date(), m = Math.floor((n - d) / 60000); if (m < 1) return 'Vừa xong'; if (m < 60) return m + 'p trước'; if (m < 1440) return Math.floor(m / 60) + 'h trước'; return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) } catch { return iso } }
+    function fmtSize(b) { if (!b) return '0B'; if (b < 1024) return b + 'B'; if (b < 1048576) return (b / 1024).toFixed(1) + 'KB'; return (b / 1048576).toFixed(1) + 'MB' }
+    function escAttr(s) { return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+
+    // ── WebSocket ──
+    function wsConnect() {
+      const pr = location.protocol === 'https:' ? 'wss' : 'ws';
+      ws = new WebSocket(`${pr}://${location.host}`);
+      ws.onopen = () => { $('wsS').className = 'ws-s on'; $('wsT').textContent = 'Đã kết nối' };
+      ws.onclose = () => { $('wsS').className = 'ws-s off'; $('wsT').textContent = 'Mất kết nối'; setTimeout(wsConnect, 3000) };
+      ws.onmessage = e => {
+        const d = JSON.parse(e.data);
+        if (d.type === 'init') { wS = d.watchers || {}; updStats(d.stats); loadAccs(); loadEmails(); updBanner() }
+        else if (d.type === 'status') { wS[d.accountId] = { ...wS[d.accountId], status: d.status, error: d.error || null }; loadAccs(); updBanner() }
+        else if (d.type === 'email') {
+          const from = d.from || 'Không rõ';
+          toast('Email mới nhận được', `Từ: ${from}\nĐến: ${d.email}\nNội dung: ${d.subject}`, d.success ? 'ok' : 'er', { email: d.email });
+          updStats();
+          if (inboxLoaded || curTab === 'account') loadEmails();
+        }
+      };
+    }
+
+    // ── Banner ──
+    function updBanner() {
+      const errs = Object.entries(wS).filter(([, w]) => w.status === 'error');
+      const banner = $('errorBanner'), list = $('errorBannerList');
+      if (errs.length === 0) { banner.classList.remove('show'); return }
+      banner.classList.add('show');
+      list.innerHTML = errs.map(([id, w]) => `<div class="error-banner-item">❌ <b>${esc(w.email || id)}</b> — ${esc(w.lastError || 'Lỗi kết nối')}</div>`).join('');
+    }
+
+    // ── Stats ──
+    function updStats(s) { if (!s) return; $('sE').textContent = s.totalEmailsProcessed || 0; $('sW').textContent = s.totalWebhooksSent || 0; $('sF').textContent = s.totalWebhooksFailed || 0; $('sA').textContent = Object.values(wS).filter(w => w.status === 'connected').length }
+    async function refStats() { try { const d = await api('/health'); updStats(d.stats); if (d.errorAccounts) updBanner() } catch { } }
+
+    // ── Accounts ──
+    function toggleTheme() {
+      const isDark = !document.body.classList.contains('light-mode');
+      if (isDark) {
+        document.body.classList.add('light-mode');
+        localStorage.setItem('mailhub_theme', 'light');
+      } else {
+        document.body.classList.remove('light-mode');
+        localStorage.setItem('mailhub_theme', 'dark');
+      }
+    }
+
+    function loadTheme() {
+      const t = localStorage.getItem('mailhub_theme');
+      if (t === 'light') document.body.classList.add('light-mode');
+    }
+
+    let accDebounce;
+    function onAccSearch() { clearTimeout(accDebounce); accDebounce = setTimeout(() => { accSearchQ = $('accSearch').value.trim(); accPage = 1; loadAccs() }, 300) }
+    function setAccFilter(f) { accFilter = f; accPage = 1; document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.f === f)); loadAccs() }
+    function onAccLimitChange() {
+      accLimit = Number($('accLimitSelect').value);
+      localStorage.setItem('mailhub_acc_limit', accLimit);
+      accPage = 1;
+      loadAccs()
+    }
+
+    async function loadAccs() {
+      try {
+        const q = new URLSearchParams({ page: accPage, limit: accLimit, search: accSearchQ, status: accFilter });
+        const d = await api(`/accounts?${q}`);
+        renderAccs(d.accounts || []);
+        renderPager('accPager', d.page, d.totalPages, d.totalCount, p => { accPage = p; loadAccs() });
+      } catch { $('accList').innerHTML = '<div class="empty"><div class="ei-c">⚠️</div><p>Lỗi tải</p></div>' }
+    }
+
+    function renderAccs(accs) {
+      const c = $('accList');
+      $('sA').textContent = Object.values(wS).filter(w => w.status === 'connected').length;
+      if (!accs.length) { c.innerHTML = '<div class="empty"><div class="ei-c">📭</div><p>Không có tài khoản nào</p></div>'; return }
+      c.innerHTML = accs.map(a => {
+        const st = a.watcherStatus || wS[a.id]?.status || 'stopped';
+        const lb = { connected: '🟢 OK', connecting: '🟡 ...', error: '🔴 Lỗi', stopped: '⚫ Dừng' };
+        const ini = (a.email || '?')[0].toUpperCase();
+        const act = a.id === selAcc && curTab === 'account';
+        return `<div class="acc ${act ? 'on' : ''}" onclick="selAccount('${a.id}')">
+      <div class="acc-i"><div class="acc-av">${ini}</div><div style="min-width:0"><div class="acc-e">${esc(a.email)}</div><div class="acc-id">${a.id}${a.encrypted ? ' 🔒' : ''}</div></div></div>
+      <div class="acc-s ${st}">${lb[st] || st}</div>
+      <div class="acc-a" onclick="event.stopPropagation()">
+        ${st === 'connected' || st === 'connecting' ? `<button class="btn btn-d btn-ic" onclick="stopAcc('${a.id}')">⏹</button>` : `<button class="btn btn-ok btn-ic" onclick="startAcc('${a.id}')">▶</button>`}
+        <button class="btn btn-d btn-ic" onclick="delAcc('${a.id}')">🗑</button>
+      </div></div>`}).join('');
+    }
+
+    // ── Pagination ──
+    function renderPager(elId, page, totalPages, totalCount, onPage) {
+      const el = $(elId);
+      if (totalPages <= 1) { el.innerHTML = ''; return }
+      let html = '<div class="pager">';
+      html += `<button class="pager-btn" ${page <= 1 ? 'disabled' : ''} onclick="void 0" data-p="${page - 1}">◀</button>`;
+      const start = Math.max(1, page - 2), end = Math.min(totalPages, page + 2);
+      for (let i = start; i <= end; i++) {
+        html += `<button class="pager-btn ${i === page ? 'on' : ''}" data-p="${i}">${i}</button>`;
+      }
+      html += `<button class="pager-btn" ${page >= totalPages ? 'disabled' : ''} data-p="${page + 1}">▶</button>`;
+      html += `<span class="pager-info">${totalCount} kết quả</span></div>`;
+      el.innerHTML = html;
+      el.querySelectorAll('.pager-btn').forEach(b => {
+        b.addEventListener('click', () => { const p = Number(b.dataset.p); if (p >= 1 && p <= totalPages) onPage(p) });
+      });
+    }
+
+    // ── Tabs ──
+    function swTab(t) {
+      curTab = t; $('tAll').className = `tab ${t === 'all' ? 'on' : ''}`; $('tAcc').className = `tab ${t === 'account' ? 'on' : ''}`;
+      emailPage = 1;
+      if (t === 'all') { selAcc = null; loadAccs(); if (inboxLoaded) loadInbox(); else showInboxPrompt(); }
+      else { if (selAcc) loadAccEmails(selAcc); else { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">👆</div><p>Chọn tài khoản</p></div>'; $('rpS').textContent = ''; $('emailPager').innerHTML = '' } }
+    }
+    function loadEmails() { if (curTab === 'all' && inboxLoaded) loadInbox(); else if (selAcc && curTab === 'account') loadAccEmails(selAcc) }
+
+    function showInboxPrompt() {
+      inboxLoaded = false;
+      $('rpB').innerHTML = '<div class="empty" style="margin-top:20px"><div class="ei-c" style="font-size:48px;margin-bottom:16px">📨</div><p style="margin-bottom:20px;color:var(--t2);font-size:14px">Bạn đang xem tất cả hộp thư</p><button class="btn btn-p" onclick="inboxLoaded=true;loadInbox()" style="padding:10px 20px;font-size:14px">Tải & Khám phá ngay</button></div>';
+      $('rpS').textContent = '';
+      $('emailPager').innerHTML = '';
+    }
+
+    // ── Unified Inbox ──
+    async function loadInbox() {
+      $('rpB').innerHTML = '<div class="ld"><div class="spin"></div>Đang tải...</div>'; $('rpS').textContent = ''; $('emailPager').innerHTML = '';
+      try {
+        const d = await api(`/inbox?page=${emailPage}&limit=10`);
+        $('rpS').textContent = `${d.totalAccounts} TK · ${d.totalCount} email`;
+        if (!d.emails?.length) { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">📭</div><p>Không có email trong 2 ngày qua</p></div>'; return }
+        renderEmails(d.emails, true);
+        renderPager('emailPager', d.page, d.totalPages, d.totalCount, p => { emailPage = p; loadInbox() });
+      } catch { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">⚠️</div><p>Lỗi tải</p></div>' }
+    }
+
+    // ── Per-account ──
+    function selAccount(id) { selAcc = id; curTab = 'account'; $('tAll').className = 'tab'; $('tAcc').className = 'tab on'; emailPage = 1; loadAccs(); loadAccEmails(id) }
+    async function loadAccEmails(id) {
+      $('rpB').innerHTML = '<div class="ld"><div class="spin"></div>Đang tải...</div>'; $('rpS').textContent = ''; $('emailPager').innerHTML = '';
+      try {
+        const d = await api(`/accounts/${id}/emails?page=${emailPage}&limit=10`);
+        $('rpS').textContent = d.email || '';
+        if (!d.emails?.length) { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">📭</div><p>Không có email</p></div>'; return }
+        renderEmails(d.emails.map(e => ({ ...e, accountId: d.accountId, accountEmail: d.email })), false);
+        renderPager('emailPager', d.page, d.totalPages, d.totalCount, p => { emailPage = p; loadAccEmails(id) });
+      } catch { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">⚠️</div><p>Lỗi tải</p></div>' }
+    }
+
+    function renderEmails(emails, showAcc) {
+      $('rpB').innerHTML = `<div class="el">${emails.map(e => {
+        const ur = !e.seen, from = e.from?.name || e.from?.address || '?', dt = e.date ? fmtDate(e.date) : '';
+        const to = e.accountEmail || '';
+        return `<div class="ei ${ur ? 'ur' : ''}" onclick="openEm('${e.accountId}',${e.uid})">
+          <span class="e-ic">${ur ? '📩' : '📧'}</span>
+          <div class="e-c">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div class="e-s">${esc(e.subject)}</div>
+              <span class="e-time">${dt}</span>
+            </div>
+            <div class="ei-m">
+              <div class="ei-row">
+                <span class="label">Từ</span>
+                <span class="val">${esc(from)}</span>
+              </div>
+              <div class="ei-row to">
+                <span class="label">Đến</span>
+                <span class="val">${esc(to)}</span>
+                ${ur ? '<span style="color:var(--ac);font-weight:600;font-size:9px;margin-left:auto">● MỚI</span>' : ''}
+              </div>
+            </div>
+          </div>
+        </div>`
+      }).join('')}</div>`;
+    }
+
+    // ── Email Detail ──
+    async function openEm(accId, uid) {
+      $('emMo').classList.add('on'); $('emT').textContent = '📧 Đang tải...'; $('emB').innerHTML = '<div class="ld"><div class="spin"></div>Đang tải...</div>';
+      try {
+        const d = await api(`/accounts/${accId}/emails/${uid}`); const e = d.email;
+        $('emT').textContent = `📧 ${e.subject || '(no subject)'}`;
+        const fr = (e.from || []).map(f => `${f.name ? f.name + ' ' : ''}&#60;${f.address}&#62;`).join(', ') || '?';
+        const to = (e.to || []).map(f => `${f.name ? f.name + ' ' : ''}&#60;${f.address}&#62;`).join(', ') || '';
+        const cc = (e.cc || []).map(f => `${f.name ? f.name + ' ' : ''}&#60;${f.address}&#62;`).join(', ');
+        const dt = e.date ? new Date(e.date).toLocaleString('vi-VN', { dateStyle: 'full', timeStyle: 'medium' }) : '';
+        let att = '';
+        if (e.attachments?.length) { att = `<div style="margin-top:14px"><div class="ed-l" style="margin-bottom:6px">📎 Tệp đính kèm (${e.attachments.length})</div><div class="att">${e.attachments.map(a => `<div class="att-c">📄 ${esc(a.filename || '?')} <span style="color:var(--t3)">(${fmtSize(a.size)})</span></div>`).join('')}</div></div>` }
+        const body = e.html ? `<div class="ed-body html"><iframe srcdoc="${escAttr(e.html)}" style="width:100%;min-height:280px;border:none;background:white;border-radius:8px" sandbox="allow-same-origin"></iframe></div>` : `<div class="ed-body">${esc(e.text || '(trống)')}</div>`;
+        $('emB').innerHTML = `<div style="margin-bottom:16px">
+      <div class="ed-r"><span class="ed-l">Từ</span><span class="ed-v">${fr}</span></div>
+      <div class="ed-r"><span class="ed-l">Đến</span><span class="ed-v">${to}</span></div>
+      ${cc ? `<div class="ed-r"><span class="ed-l">CC</span><span class="ed-v">${cc}</span></div>` : ''}
+      <div class="ed-r"><span class="ed-l">Ngày</span><span class="ed-v">${dt}</span></div>
+      <div class="ed-r"><span class="ed-l">TK</span><span class="ed-v"><span class="e-badge">${esc(d.accountEmail || '')}</span></span></div>
+    </div>${body}${att}`;
+      } catch (err) { $('emT').textContent = '⚠️ Lỗi'; $('emB').innerHTML = `<div class="empty"><div class="ei-c">⚠️</div><p>${esc(err.message || '')}</p></div>` }
+    }
+    function closeEm() { $('emMo').classList.remove('on') }
+
+    // ── Account Actions ──
+    async function startAcc(id) { try { await api(`/accounts/${id}/start`, 'POST'); toast('Khởi động', 'Đang bắt đầu theo dõi tài khoản', 'ok'); loadAccs() } catch { toast('Lỗi', 'Không thể khởi động tài khoản', 'er') } }
+    async function stopAcc(id) { try { await api(`/accounts/${id}/stop`, 'POST'); toast('Dừng lại', 'Đã dừng theo dõi tài khoản', 'in'); wS[id] = { ...wS[id], status: 'stopped' }; loadAccs(); updBanner() } catch { toast('Lỗi', 'Không thể dừng tài khoản', 'er') } }
+    async function delAcc(id) { if (!confirm('Xóa tài khoản?')) return; try { await api(`/accounts/${id}`, 'DELETE'); delete wS[id]; if (selAcc === id) { selAcc = null; swTab('all') } toast('Đã xóa', 'Tài khoản đã bị xóa khỏi hệ thống', 'ok'); loadAccs(); updBanner() } catch { toast('Lỗi', 'Không thể xóa tài khoản', 'er') } }
+
+    // ── Add Modal ──
+    function openAdd() {
+      $('addMo').classList.add('on');
+      $('nPreset').value = 'gmail';
+      $('nAuthType').value = 'app_password';
+      onAuthTypeChange();
+      onPresetChange();
+      $('nE').focus()
+    }
+    function onAuthTypeChange() {
+      const t = $('nAuthType').value;
+      $('authPassField').style.display = t === 'cookie' ? 'none' : 'block';
+      $('authCookieField').style.display = t === 'cookie' ? 'block' : 'none';
+      if (t === 'app_password') $('nPLab').textContent = 'App Password';
+      else if (t === 'password') $('nPLab').textContent = 'Mật khẩu chính';
+    }
+    function onPresetChange() {
+      const p = $('nPreset').value;
+      $('customImapFields').style.display = p === 'custom' ? 'block' : 'none';
+      if (p !== 'custom') {
+        const presets = {
+          gmail: { h: 'imap.gmail.com', po: 993, s: 'true' },
+          outlook: { h: 'imap-mail.outlook.com', po: 993, s: 'true' },
+          yahoo: { h: 'imap.mail.yahoo.com', po: 993, s: 'true' },
+          icloud: { h: 'imap.mail.me.com', po: 993, s: 'true' },
+          zoho: { h: 'imap.zoho.com', po: 993, s: 'true' },
+          yandex: { h: 'imap.yandex.com', po: 993, s: 'true' }
+        };
+        const pre = presets[p];
+        if (pre) {
+          $('nH').value = pre.h;
+          $('nPo').value = pre.po;
+          $('nS').value = pre.s;
+        }
+      }
+    }
+    function closeAdd() { $('addMo').classList.remove('on'); $('nE').value = ''; $('nP').value = ''; $('nC').value = ''; $('nH').value = ''; }
+    async function doAdd() {
+      const e = $('nE').value.trim();
+      const p = $('nP').value.trim();
+      const c = $('nC').value.trim();
+      const t = $('nAuthType').value;
+      const h = $('nH').value.trim(), po = Number($('nPo').value), s = $('nS').value === 'true';
+
+      if (!e || (t === 'cookie' ? !c : !p) || !h) { toast('Nhập đầy đủ thông tin', 'er'); return }
+      try {
+        const r = await api('/accounts', 'POST', {
+          email: e,
+          appPassword: p,
+          authType: t,
+          cookie: c,
+          imapHost: h,
+          imapPort: po,
+          imapSecure: s,
+          enabled: true
+        }); if (r.error) { toast('Lỗi', r.error, 'er'); return } closeAdd(); toast('Thành công', `Đã thêm tài khoản ${e}`, 'ok'); if (r.account?.id) await api(`/accounts/${r.account.id}/start`, 'POST'); loadAccs(); setTimeout(loadEmails, 3000)
+      } catch { toast('Lỗi', 'Không thể thêm tài khoản', 'er') }
+    }
+
+    // ── Logs & Config ──
+    async function openLogs() { $('logsMo').classList.add('on'); loadLogs() }
+    function closeLogs() { $('logsMo').classList.remove('on') }
+    async function loadLogs() {
+      $('logsB').innerHTML = '<div class="ld"><div class="spin"></div>Đang tải...</div>';
+      try {
+        const d = await api('/logs?limit=250');
+        if (!d.logs?.length) { $('logsB').innerHTML = '<i style="color:var(--t3)">Không có log nào...</i>'; return; }
+        $('logsB').innerHTML = d.logs.map(l => {
+          let c = '#cbd5e1'; if (l.level === 'error') c = '#ef4444'; else if (l.level === 'warn') c = '#f59e0b'; else if (l.level === 'debug') c = '#64748b';
+          const t = new Date(l.time).toLocaleTimeString('vi-VN', { hour12: false });
+          return `<div style="white-space:pre-wrap;margin-bottom:4px;color:${c}">[${t}] [${l.tag}] ${escAttr(l.message)}</div>`
+        }).join('');
+        const b = $('logsB'); b.scrollTop = b.scrollHeight;
+      } catch { $('logsB').innerHTML = '<div style="color:red">Lỗi tải logs</div>' }
+    }
+    async function clearLogs() { if (!confirm('Xóa tất cả logs?')) return; try { await api('/logs', 'DELETE'); loadLogs(); toast('Đã xóa', 'Tất cả logs đã được dọn dẹp', 'ok') } catch { } }
+
+    async function openCfg() {
+      $('cfgMo').classList.add('on');
+      try {
+        const d = await api('/config'); const c = d.config || {};
+        $('cWebhook').value = c.webhookUrl || '';
+      } catch { }
+    }
+    function closeCfg() { $('cfgMo').classList.remove('on') }
+    async function saveCfg() {
+      try {
+        await api('/config', 'PUT', {
+          webhookUrl: $('cWebhook').value.trim()
+        });
+        closeCfg(); toast('Cấu hình', 'Đã lưu cài đặt hệ thống', 'ok');
+        loadEmails();
+      } catch { toast('Lỗi', 'Không thể lưu cấu hình', 'er') }
+    }
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTheme();
+      loadNotifs();
+      $('accLimitSelect').value = accLimit;
+      wsConnect(); loadAccs(); showInboxPrompt(); setInterval(refStats, 30000);
+      $('addMo').addEventListener('click', e => { if (e.target === e.currentTarget) closeAdd() });
+      $('emMo').addEventListener('click', e => { if (e.target === e.currentTarget) closeEm() });
+      $('nP').addEventListener('keydown', e => { if (e.key === 'Enter') doAdd() });
+    });
+  </script>
+</body>
+
+</html>

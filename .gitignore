@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Sensitive Data (Accounts, Passwords, etc.)
+accounts.json
+encryption.key
+
+# Local Configuration
+config.json
+
+# Local Runtime Data
+notifications.json
+
+# Environment files
+.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Misc
+.DS_Store
+Thumbs.db

@@ -1,0 +1,6 @@
+{
+    "webhookUrl": "https://n8n.your-domain.com/webhook/your-id",
+    "apiPort": 8899,
+    "pollIntervalMs": 3000,
+    "connectStaggerMs": 500
+}
