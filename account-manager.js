@@ -82,7 +82,7 @@ export function getAccountById(id) {
     return { ...acc, appPassword: decrypt(acc.appPassword) };
 }
 
-export function addAccount({ email, appPassword, authType, cookie, imapHost, imapPort, imapSecure, enabled = true }) {
+export function addAccount({ email, appPassword, authType, cookie, imapHost, imapPort, imapSecure, enabled = true, webhookIds = [] }) {
     const id = `acc_${String(Date.now()).slice(-6)}_${Math.random().toString(36).slice(2, 6)}`;
     const cleanPassword = appPassword ? appPassword.replace(/\s+/g, '') : appPassword;
     const newAcc = {
@@ -94,7 +94,8 @@ export function addAccount({ email, appPassword, authType, cookie, imapHost, ima
         imapHost,
         imapPort,
         imapSecure,
-        enabled
+        enabled,
+        webhookIds: Array.isArray(webhookIds) ? webhookIds : []
     };
     accounts.push(newAcc);
     saveAccounts();
@@ -106,7 +107,7 @@ export function updateAccount(id, updates) {
     const idx = accounts.findIndex(a => a.id === id);
     if (idx === -1) return null;
 
-    const allowed = ["email", "appPassword", "authType", "cookie", "enabled", "imapHost", "imapPort", "imapSecure"];
+    const allowed = ["email", "appPassword", "authType", "cookie", "enabled", "imapHost", "imapPort", "imapSecure", "webhookIds"];
     for (const key of allowed) {
         if (updates[key] !== undefined) {
             if (key === "appPassword") {
@@ -116,6 +117,8 @@ export function updateAccount(id, updates) {
                 accounts[idx][key] = encrypt(updates[key] || "");
             } else if (key === "email" && typeof updates[key] === "string") {
                 accounts[idx][key] = updates[key].trim();
+            } else if (key === "webhookIds") {
+                accounts[idx][key] = Array.isArray(updates[key]) ? updates[key] : [];
             } else {
                 accounts[idx][key] = updates[key];
             }
@@ -139,4 +142,29 @@ export function deleteAccount(id) {
 
 export function getTotalAccounts() {
     return accounts.length;
+}
+
+/**
+ * Updates all accounts to either include or exclude a specific webhookId
+ * based on the provided accountIds list.
+ */
+export function updateAccountsForWebhook(webhookId, activeAccountIds) {
+    let changed = false;
+    for (const acc of accounts) {
+        if (!acc.webhookIds) acc.webhookIds = [];
+        const isCurrentlyActive = acc.webhookIds.includes(webhookId);
+        const shouldBeActive = activeAccountIds.includes(acc.id);
+
+        if (shouldBeActive && !isCurrentlyActive) {
+            acc.webhookIds.push(webhookId);
+            changed = true;
+        } else if (!shouldBeActive && isCurrentlyActive) {
+            acc.webhookIds = acc.webhookIds.filter(id => id !== webhookId);
+            changed = true;
+        }
+    }
+    if (changed) {
+        saveAccounts();
+    }
+    return changed;
 }

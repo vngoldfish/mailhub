@@ -17,7 +17,58 @@ function getImapSettings(acc) {
     };
 }
 
-function getWebhookUrl() { return getConfig().webhookUrl; }
+function getWebhooksForAccount(acc) {
+    const cfg = getConfig();
+    const result = [];
+
+    // 1. Account specific (multiple selected from the webhooks array)
+    if (acc && Array.isArray(acc.webhookIds)) {
+        for (const id of acc.webhookIds) {
+            const webhook = (cfg.webhooks || []).find(w => w.id === id);
+            if (webhook && webhook.url && webhook.enabled !== false) {
+                result.push(webhook);
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Checks if a payload matches the filter criteria of a webhook
+ */
+function matchFilters(payload, filters) {
+    if (!filters || Object.keys(filters).length === 0) return true;
+
+    // Filter by Subject (Regex)
+    if (filters.subject) {
+        try {
+            const regex = new RegExp(filters.subject, 'i');
+            if (!regex.test(payload.subject || "")) return false;
+        } catch (e) {
+            // If invalid regex, fallback to simple includes
+            if (!(payload.subject || "").toLowerCase().includes(filters.subject.toLowerCase())) return false;
+        }
+    }
+
+    // Filter by Sender (From)
+    if (filters.from) {
+        const fromStr = JSON.stringify(payload.from || "").toLowerCase();
+        if (!fromStr.includes(filters.from.toLowerCase())) return false;
+    }
+
+    // Filter by Body Text (Regex)
+    if (filters.text) {
+        try {
+            const regex = new RegExp(filters.text, 'i');
+            if (!regex.test(payload.text || "")) return false;
+        } catch (e) {
+            if (!(payload.text || "").toLowerCase().includes(filters.text.toLowerCase())) return false;
+        }
+    }
+
+    return true;
+}
 function getPollInterval() { return getConfig().pollIntervalMs || 3000; }
 
 // Track watcher state per account
@@ -96,14 +147,35 @@ async function processNewEmails(acc, state, client, broadcastFn) {
                     receivedAt: new Date().toISOString()
                 };
 
-                const success = await postWebhook(getWebhookUrl(), payload);
+                const webhooksToCall = getWebhooksForAccount(acc);
+                let anyAttempted = false;
+                let anySucceeded = false;
+                const webhookResults = [];
+
+                for (const wh of webhooksToCall) {
+                    if (matchFilters(payload, wh.filters)) {
+                        anyAttempted = true;
+                        const res = await postWebhook(wh.url, payload, wh);
+                        webhookResults.push({ name: wh.name, success: !!res });
+                        if (res) {
+                            anySucceeded = true;
+                            stats.totalWebhooksSent++;
+                        } else {
+                            stats.totalWebhooksFailed++;
+                        }
+                    } else {
+                        // skipCount is local to loop, but we can track skipped too if needed
+                    }
+                }
+
+                // success is true ONLY if:
+                // 1. If webhooks were attempted, ALL attempted must succeed (or at least one for a 'soft' success)
+                // Let's stick to anySucceeded for the 'success' flag, but pass details
+                const success = anyAttempted ? anySucceeded : true;
 
                 state.lastUid = msg.uid;
                 state.emailsProcessed++;
                 stats.totalEmailsProcessed++;
-
-                if (success) stats.totalWebhooksSent++;
-                else stats.totalWebhooksFailed++;
 
                 broadcastFn?.({
                     type: "email",
@@ -113,6 +185,7 @@ async function processNewEmails(acc, state, client, broadcastFn) {
                     subject: parsed.subject || "(no subject)",
                     from: parsed.from?.text || "",
                     success,
+                    webhookResults, // List of {name, success}
                     time: new Date().toISOString()
                 });
 

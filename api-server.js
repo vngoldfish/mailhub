@@ -4,10 +4,17 @@
 import express from "express";
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
+import cookieParser from "cookie-parser";
+import { readFileSync, existsSync } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { log, getLogBuffer, clearLogBuffer } from "./logger.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import {
     getAccounts, getAccountsSafe, getEnabledAccounts, getAccountById,
-    addAccount, updateAccount, deleteAccount, getTotalAccounts
+    addAccount, updateAccount, deleteAccount, getTotalAccounts, updateAccountsForWebhook
 } from "./account-manager.js";
 import {
     getAllWatcherStatuses, getWatcherStatus, getStats,
@@ -29,12 +36,25 @@ export function broadcast(data) {
     // Save to server-side notification history
     if (data.type === 'email') {
         const from = data.from || 'Không rõ';
+
+        // 1. Email received notification
         addNotification({
-            type: data.success ? 'ok' : 'er',
-            title: 'Email mới nhận được',
-            message: `Từ: ${from}\nĐến: ${data.email}\nNội dung: ${data.subject}`,
+            type: 'in',
+            title: '📩 Email mới nhận được',
+            message: `Tài khoản: ${data.email}\nTừ: ${from}\nTiêu đề: ${data.subject}`,
             email: data.email
         });
+
+        // 2. Webhook result notification (if any)
+        if (data.webhookResults && data.webhookResults.length > 0) {
+            const whDetails = data.webhookResults.map(r => `${r.name}: ${r.success ? '✅' : '❌'}`).join('\n');
+            addNotification({
+                type: data.success ? 'ok' : 'er',
+                title: data.success ? '🔗 Webhook thành công' : '⚠️ Webhook thất bại',
+                message: `Kết quả gửi cho email: ${data.subject}\n${whDetails}`,
+                email: data.email
+            });
+        }
     } else if (data.type === 'status' && data.status === 'error') {
         const acc = getAccountById(data.accountId);
         if (acc) {
@@ -51,9 +71,76 @@ export function broadcast(data) {
 export function createApiServer() {
     const app = express();
     const server = createServer(app);
+    const USERS_FILE = path.resolve("./users.json");
+    const AUTH_SECRET = "mailhub_temp_secret_123";
 
     app.use(express.json());
-    app.use(express.static("public"));
+    app.use(cookieParser(AUTH_SECRET));
+
+    // Role-Based Auth Middleware
+    const auth = (req, res, next) => {
+        const p = req.path;
+        if (p === "/login" || p === "/health") return next();
+
+        const session = req.signedCookies.mh_token;
+        if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+        const role = session.role;
+        // RBAC logic
+        const m = req.method;
+
+        if (role === "viewer") {
+            if (m !== "GET") return res.status(403).json({ error: "Quyền 'Xem' không được phép thực hiện thao tác này" });
+        } else if (role === "editor") {
+            if (m === "DELETE") return res.status(403).json({ error: "Quyền 'Editor' không được phép xóa dữ liệu" });
+            if (p === "/config" && m === "PUT") return res.status(403).json({ error: "Chỉ Admin mới có thể thay đổi cấu hình hệ thống" });
+            if (p === "/logs" && m === "DELETE") return res.status(403).json({ error: "Chỉ Admin mới có quyền xóa Logs" });
+        }
+
+        req.user = session; // Attach full session data
+        next();
+    };
+
+    app.use("/api", auth);
+    app.use(express.static(path.join(__dirname, "public")));
+
+    // Serve SPA for both / and /login
+    app.get(["/", "/login"], (req, res) => {
+        res.sendFile(path.join(__dirname, "public", "index.html"));
+    });
+
+    // ─── Auth Endpoints ────────────────────────────────────
+    app.post("/api/login", (req, res) => {
+        const { username, password } = req.body;
+        try {
+            if (existsSync(USERS_FILE)) {
+                const users = JSON.parse(readFileSync(USERS_FILE, "utf-8"));
+                const user = users[username];
+                if (user && user.password === password) {
+                    res.cookie("mh_token", { username, role: user.role || "viewer" }, {
+                        httpOnly: true,
+                        signed: true,
+                        maxAge: 86400000 // 24 hours
+                    });
+                    return res.json({ success: true, message: "Logged in", username, role: user.role });
+                }
+            }
+            res.status(401).json({ error: "Sai tài khoản hoặc mật khẩu" });
+        } catch (e) {
+            res.status(500).json({ error: "Lỗi hệ thống" });
+        }
+    });
+
+    app.post("/api/logout", (req, res) => {
+        res.clearCookie("mh_token");
+        res.json({ success: true, message: "Logged out" });
+    });
+
+    app.get("/api/me", (req, res) => {
+        const session = req.signedCookies.mh_token;
+        if (!session) return res.status(401).json({ error: "Unauthorized" });
+        res.json({ authenticated: true, username: session.username, role: session.role });
+    });
 
     // ─── Health Check ──────────────────────────────────────
     app.get("/api/health", (_req, res) => {
@@ -113,12 +200,12 @@ export function createApiServer() {
     });
 
     app.post("/api/accounts", (req, res) => {
-        const { email, appPassword, authType, cookie, imapHost, imapPort, imapSecure, enabled } = req.body;
+        const { email, appPassword, authType, cookie, imapHost, imapPort, imapSecure, enabled, webhookIds } = req.body;
         if (!email || (!appPassword && !cookie)) {
             return res.status(400).json({ error: "email and (appPassword or cookie) are required" });
         }
         try {
-            const acc = addAccount({ email, appPassword, authType, cookie, imapHost, imapPort, imapSecure, enabled });
+            const acc = addAccount({ email, appPassword, authType, cookie, imapHost, imapPort, imapSecure, enabled, webhookIds });
             res.status(201).json({
                 account: { ...acc, appPassword: "••••••••" },
                 message: "Account created."
@@ -241,6 +328,17 @@ export function createApiServer() {
         res.json({ message: "Logs cleared" });
     });
 
+    app.get("/api/logs/webhooks", (req, res) => {
+        const { webhookId } = req.query;
+        let logs = getLogBuffer().filter(l => l.tag === "WEBHOOK" || l.tag.startsWith("WEBHOOK:"));
+
+        if (webhookId) {
+            logs = logs.filter(l => l.webhookId === webhookId);
+        }
+
+        res.json({ logs: logs.reverse() });
+    });
+
     // ─── Config ────────────────────────────────────────────────
     app.get("/api/config", (_req, res) => {
         res.json({ config: getConfig() });
@@ -259,14 +357,109 @@ export function createApiServer() {
         res.json({ presets: getImapPresets() });
     });
 
+    // ─── Individual Webhook Management ─────────────────────
+    // Note: These manipulate the 'webhooks' array in config.json
+
+    app.post("/api/webhooks", (req, res) => {
+        const { name, url, accountIds, filters, enabled } = req.body;
+        if (!url) return res.status(400).json({ error: "Webhook URL is required" });
+
+        const cfg = getConfig();
+        const id = `wh_${Math.random().toString(36).slice(2, 8)}`;
+        const newWh = { id, name: name || id, url, enabled: enabled !== false, filters: filters || {} };
+
+        const webhooks = [...(cfg.webhooks || []), newWh];
+        updateConfig({ webhooks });
+
+        if (Array.isArray(accountIds)) {
+            updateAccountsForWebhook(id, accountIds);
+        }
+
+        res.status(201).json({ webhook: newWh, message: "Webhook created" });
+    });
+
+    app.put("/api/webhooks/:id", (req, res) => {
+        const { id } = req.params;
+        const { name, url, accountIds, filters, enabled } = req.body;
+
+        const cfg = getConfig();
+        const webhooks = cfg.webhooks || [];
+        const idx = webhooks.findIndex(w => w.id === id);
+
+        if (idx === -1) return res.status(404).json({ error: "Webhook not found" });
+
+        if (name !== undefined) webhooks[idx].name = name;
+        if (url !== undefined) webhooks[idx].url = url;
+        if (filters !== undefined) webhooks[idx].filters = filters;
+        if (enabled !== undefined) webhooks[idx].enabled = !!enabled;
+
+        updateConfig({ webhooks });
+
+        if (Array.isArray(accountIds)) {
+            updateAccountsForWebhook(id, accountIds);
+        }
+
+        res.json({ webhook: webhooks[idx], message: "Webhook updated" });
+    });
+
+    app.delete("/api/webhooks/:id", (req, res) => {
+        const { id } = req.params;
+        const cfg = getConfig();
+        const webhooks = (cfg.webhooks || []).filter(w => w.id !== id);
+
+        updateConfig({ webhooks });
+        // Remove this webhook from all accounts
+        updateAccountsForWebhook(id, []);
+
+        res.json({ message: "Webhook deleted" });
+    });
+
     // ─── Notifications ─────────────────────────────────────
-    app.get("/api/notifications", (_req, res) => {
-        res.json({ notifications: getNotifications() });
+    app.get("/api/notifications", (req, res) => {
+        const page = Math.max(1, Number(req.query.page) || 1);
+        const limit = Math.min(Number(req.query.limit) || 10, 50);
+
+        const allNotifs = getNotifications();
+        const totalCount = allNotifs.length;
+        const totalPages = Math.ceil(totalCount / limit);
+        const startIdx = (page - 1) * limit;
+        const paged = allNotifs.slice(startIdx, startIdx + limit);
+
+        res.json({
+            notifications: paged,
+            totalCount,
+            page,
+            totalPages,
+            limit
+        });
     });
 
     // ─── WebSocket ─────────────────────────────────────────
     wss = new WebSocketServer({ server });
-    wss.on("connection", (ws) => {
+    wss.on("connection", (ws, req) => {
+        // Authenticate WS
+        const cookiesStr = req.headers.cookie || "";
+        const cookieObj = {};
+        cookiesStr.split(/;\s*/).forEach(c => {
+            const [k, ...v] = c.split("=");
+            if (k) {
+                try {
+                    cookieObj[k.trim()] = decodeURIComponent(v.join("="));
+                } catch (e) { }
+            }
+        });
+        const parsed = cookieParser.signedCookies(cookieObj, AUTH_SECRET);
+        let session = parsed.mh_token;
+        if (session && typeof session === 'string' && session.startsWith('j:')) {
+            try { session = JSON.parse(session.substring(2)); } catch (e) { }
+        }
+
+        if (!session || !session.role) {
+            log("warn", "WS", "Unauthorized WS connection attempt");
+            ws.close(4001, "Unauthorized");
+            return;
+        }
+
         wsClients.add(ws);
         log("info", "WS", "Client connected");
         ws.send(JSON.stringify({

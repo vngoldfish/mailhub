@@ -2,10 +2,10 @@
 // Entry point: loads accounts, starts API server, begins watching
 
 import { log } from "./logger.js";
-import { loadAccounts, getEnabledAccounts } from "./account-manager.js";
 import { startWatcher, stopAllWatchers } from "./imap-watcher.js";
 import { createApiServer, broadcast } from "./api-server.js";
-import { loadConfig, getConfig } from "./config-manager.js";
+import { loadConfig, getConfig, updateConfig } from "./config-manager.js";
+import { loadAccounts, getEnabledAccounts, getAccounts, updateAccount } from "./account-manager.js";
 
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
@@ -20,14 +20,34 @@ async function main() {
   `);
 
   // Load config (file + env overrides)
-  const config = loadConfig();
-
-  if (!config.webhookUrl) {
-    log("warn", "MAIN", "No webhookUrl configured. Set via dashboard Settings or N8N_WEBHOOK_URL env var.");
-  }
+  const cfg = loadConfig();
 
   // Load accounts from JSON
   loadAccounts();
+
+  // ─── One-time Migration for Legacy Webhooks ───
+  try {
+    const rawCfg = JSON.parse(await import('fs').then(fs => fs.readFileSync(new URL('./config.json', import.meta.url), 'utf8')));
+    const legacyWebhookUrl = rawCfg.webhookUrl;
+
+    if (legacyWebhookUrl && (!cfg.webhooks || cfg.webhooks.length === 0)) {
+      log("info", "MAIN", "Migrating legacy webhookUrl to new webhooks system...");
+      const newWhId = 'wh_default';
+      const newWebhooks = [{ id: newWhId, name: 'Webhook Mặc định', url: legacyWebhookUrl, filters: {} }];
+      updateConfig({ webhooks: newWebhooks });
+
+      const allAccounts = getAccounts();
+      for (const acc of allAccounts) {
+        if (!acc.webhookIds || acc.webhookIds.length === 0) {
+          updateAccount(acc.id, { webhookIds: [newWhId] });
+        }
+      }
+      log("info", "MAIN", "Migration completed successfully.");
+    }
+  } catch (e) {
+    // Migration source might not exist or fail, ignore if it's already clean
+  }
+
   const enabled = getEnabledAccounts();
   log("info", "MAIN", `Found ${enabled.length} enabled account(s)`);
 
@@ -35,7 +55,7 @@ async function main() {
   createApiServer();
 
   // Start watchers for enabled accounts with stagger
-  const stagger = config.connectStaggerMs || 500;
+  const stagger = cfg.connectStaggerMs || 500;
   for (const acc of enabled) {
     startWatcher(acc, broadcast);
     await sleep(stagger);

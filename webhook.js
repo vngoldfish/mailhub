@@ -10,9 +10,9 @@ const BASE_DELAY_MS = 1000;
 let isProcessingQueue = false;
 const webhookQueue = [];
 
-export async function postWebhook(url, payload, retries = MAX_RETRIES) {
+export async function postWebhook(url, payload, meta = {}, retries = MAX_RETRIES) {
     return new Promise((resolve) => {
-        webhookQueue.push({ url, payload, retries, resolve });
+        webhookQueue.push({ url, payload, meta, retries, resolve });
         processQueue();
     });
 }
@@ -23,9 +23,9 @@ async function processQueue() {
     isProcessingQueue = true;
 
     while (webhookQueue.length > 0) {
-        const { url, payload, retries, resolve } = webhookQueue.shift();
+        const { url, payload, meta, retries, resolve } = webhookQueue.shift();
 
-        const success = await _executeWebhook(url, payload, retries);
+        const success = await _executeWebhook(url, payload, meta, retries);
 
         // Delay 1 giây giữa các webhook liên tiếp để nhả tải cho server n8n
         if (webhookQueue.length > 0) {
@@ -38,7 +38,8 @@ async function processQueue() {
     isProcessingQueue = false;
 }
 
-async function _executeWebhook(url, payload, retries) {
+async function _executeWebhook(url, payload, meta, retries) {
+    const logTag = meta.name ? `WEBHOOK:${meta.name}` : "WEBHOOK";
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
             const res = await fetch(url, {
@@ -53,24 +54,27 @@ async function _executeWebhook(url, payload, retries) {
                 throw new Error(`HTTP ${res.status}: ${body}`);
             }
 
-            log("info", "WEBHOOK", `Sent successfully`, {
+            log("info", logTag, `Sent successfully`, {
                 accountId: payload.accountId,
                 uid: payload.uid,
-                attempt
+                attempt,
+                webhookId: meta.id
             });
             return true;
         } catch (e) {
             const delay = BASE_DELAY_MS * Math.pow(2, attempt - 1);
-            log("warn", "WEBHOOK", `Attempt ${attempt}/${retries} failed: ${e.message}`, {
-                accountId: payload.accountId
+            log("warn", logTag, `Attempt ${attempt}/${retries} failed: ${e.message}`, {
+                accountId: payload.accountId,
+                webhookId: meta.id
             });
 
             if (attempt < retries) {
                 await new Promise(r => setTimeout(r, delay));
             } else {
-                log("error", "WEBHOOK", `All ${retries} attempts failed`, {
+                log("error", logTag, `All ${retries} attempts failed`, {
                     accountId: payload.accountId,
-                    uid: payload.uid
+                    uid: payload.uid,
+                    webhookId: meta.id
                 });
                 return false;
             }

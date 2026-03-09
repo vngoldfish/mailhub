@@ -19,7 +19,7 @@ export function addNotification(notif) {
         date: new Date().toISOString()
     };
     notifications.unshift(newNotif);
-    if (notifications.length > 10) notifications.pop();
+    if (notifications.length > 20) notifications.pop();
     saveNotifications();
     return newNotif;
 }

@@ -8,7 +8,8 @@
   <meta name="description" content="MailHub Collector - Real-time email monitoring dashboard">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   <style>
     *,
@@ -20,51 +21,81 @@
     }
 
     :root {
-      --bg: #0a0e1a;
-      --bg2: #111827;
-      --card: #1a2035;
-      --card-h: #1f2847;
-      --input: #0d1225;
-      --brd: #2a3555;
-      --brd-f: #6366f1;
-      --t1: #f1f5f9;
-      --t2: #94a3b8;
-      --t3: #64748b;
-      --ac: #6366f1;
-      --ac-h: #818cf8;
-      --ac-g: rgba(99, 102, 241, 0.3);
-      --ok: #10b981;
-      --ok-bg: rgba(16, 185, 129, 0.12);
-      --warn: #f59e0b;
-      --warn-bg: rgba(245, 158, 11, 0.12);
-      --err: #ef4444;
-      --err-bg: rgba(239, 68, 68, 0.12);
-      --info: #3b82f6;
-      --info-bg: rgba(59, 130, 246, 0.12);
+      --bg: #0f172a;
+      --bg2: #1e293b;
+      --card: #1e293b;
+      --card-h: #2d3b55;
+      --input: #0f172a;
+      --brd: #334155;
+      --brd-f: #818cf8;
+      --t1: #f8fafc;
+      --t2: #cbd5e1;
+      --t3: #94a3b8;
+      --ac: #818cf8;
+      --ac-h: #a5b4fc;
+      --ac-g: rgba(129, 140, 248, 0.2);
+      --ok: #34d399;
+      --ok-bg: rgba(52, 211, 153, 0.1);
+      --warn: #fbbf24;
+      --warn-bg: rgba(251, 191, 36, 0.1);
+      --err: #f87171;
+      --err-bg: rgba(248, 113, 113, 0.1);
+      --info: #60a5fa;
+      --info-bg: rgba(96, 165, 250, 0.1);
       --r: 12px;
       --rs: 8px;
-      --sh: 0 4px 24px rgba(0, 0, 0, 0.3);
+      --sh: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
       --tr: all .25s cubic-bezier(.4, 0, .2, 1)
     }
 
-    body.light-mode {
-      --bg: #f8fafc;
+    .light-mode {
+      --bg: #f3f4f6;
       --bg2: #ffffff;
       --card: #ffffff;
-      --card-h: #f1f5f9;
-      --input: #f1f5f9;
-      --brd: #e2e8f0;
-      --t1: #0f172a;
-      --t2: #475569;
-      --t3: #94a3b8;
-      --sh: 0 4px 20px rgba(0, 0, 0, 0.05);
+      --card-h: #f9fafb;
+      --input: #f3f4f6;
+      --brd: #e5e7eb;
+      --t1: #111827;
+      --t2: #374151;
+      --t3: #6b7280;
+      --sh: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+      --ac-g: rgba(99, 102, 241, 0.1);
     }
 
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
       background: var(--bg);
       color: var(--t1);
-      min-height: 100vh
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: var(--t1);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--brd);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--t3);
     }
 
     body::before {
@@ -76,7 +107,7 @@
       z-index: 0
     }
 
-    body.light-mode::before {
+    .light-mode::before {
       background: radial-gradient(800px 600px at 20% 10%, rgba(99, 102, 241, .04), transparent), radial-gradient(600px 400px at 80% 80%, rgba(16, 185, 129, .03), transparent);
     }
 
@@ -115,7 +146,7 @@
 
     .error-banner-list {
       font-size: 12px;
-      color: #fca5a5;
+      color: var(--t2);
       line-height: 1.6
     }
 
@@ -123,45 +154,73 @@
       padding: 2px 0
     }
 
-    /* Header */
+    /* Header Refinement */
     .hdr {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 28px;
+      padding: 16px 24px;
       background: var(--card);
       border: 1px solid var(--brd);
       border-radius: var(--r);
-      margin-bottom: 24px
+      margin-bottom: 24px;
+      box-shadow: var(--sh);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 1001;
+      /* Above stats and grid */
     }
 
     .hdr-l {
       display: flex;
       align-items: center;
-      gap: 16px
+      gap: 14px;
     }
 
     .logo {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, var(--ac), #a78bfa);
-      border-radius: var(--rs);
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--ac), #818cf8);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 4px 16px var(--ac-g)
-    }
-
-    .hdr h1 {
       font-size: 20px;
-      font-weight: 700
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+      flex-shrink: 0;
     }
 
-    .hdr p {
-      font-size: 13px;
-      color: var(--t2);
-      margin-top: 2px
+    .hdr-info h1 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--t1);
+      text-transform: uppercase;
+    }
+
+    .hdr-info p {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--t3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hdr-r {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hdr-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card-h);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--brd);
     }
 
     /* Notification Bell */
@@ -170,39 +229,36 @@
     }
 
     .notif-bell {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--input);
-      border: 1px solid var(--brd);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
       color: var(--t2);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 16px;
       transition: var(--tr);
-      position: relative;
     }
 
     .notif-bell:hover {
       background: var(--card-h);
-      color: var(--t1);
-      border-color: var(--ac);
+      color: var(--ac);
     }
 
     .notif-badge {
       position: absolute;
-      top: -2px;
-      right: -2px;
+      top: 4px;
+      right: 4px;
       background: var(--err);
       color: white;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 800;
-      min-width: 18px;
-      height: 18px;
-      padding: 0 4px;
-      border-radius: 10px;
+      min-width: 14px;
+      height: 14px;
+      border-radius: 7px;
       border: 2px solid var(--card);
       display: none;
       align-items: center;
@@ -221,7 +277,7 @@
       background: var(--card);
       border: 1px solid var(--brd);
       border-radius: var(--r);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 15px 50px -10px rgba(0, 0, 0, 0.4);
       z-index: 1000;
       display: none;
       flex-direction: column;
@@ -250,7 +306,7 @@
 
     .notif-item {
       padding: 12px 16px;
-      border-bottom: 1px solid rgba(42, 53, 85, 0.4);
+      border-bottom: 1px solid var(--brd);
       display: flex;
       gap: 12px;
       cursor: pointer;
@@ -258,7 +314,7 @@
     }
 
     .notif-item:hover {
-      background: rgba(99, 102, 241, 0.08);
+      background: var(--card-h);
     }
 
     .notif-ic {
@@ -314,21 +370,26 @@
     .ws-s {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 500
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid transparent;
     }
 
     .ws-s.on {
       background: var(--ok-bg);
-      color: var(--ok)
+      color: var(--ok);
+      border-color: rgba(16, 185, 129, 0.2);
     }
 
     .ws-s.off {
       background: var(--err-bg);
-      color: var(--err)
+      color: var(--err);
+      border-color: rgba(239, 68, 68, 0.2);
     }
 
     .dot {
@@ -431,6 +492,202 @@
       color: var(--warn)
     }
 
+    /* User Dropdown */
+    .user-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .user-badge {
+      cursor: pointer;
+      transition: var(--tr);
+    }
+
+    .user-badge:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .user-dd.on {
+      display: flex;
+    }
+
+    .user-dd-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: var(--rs);
+      cursor: pointer;
+      transition: var(--tr);
+      color: var(--t1);
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+
+    .user-dd-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateX(4px);
+    }
+
+    .user-dd-sep {
+      height: 1px;
+      background: var(--brd);
+      margin: 6px 4px;
+    }
+
+    /* System Bar */
+    .sys-bar {
+      margin-bottom: 24px;
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      overflow: hidden;
+      animation: fadeIn .3s;
+    }
+
+    .sys-ti {
+      background: var(--card-h);
+      padding: 8px 16px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ac);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--brd);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sys-list {
+      display: flex;
+      flex-direction: column;
+      background: var(--brd);
+      gap: 1px;
+    }
+
+    .sys-item {
+      background: var(--card);
+      padding: 10px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      transition: var(--tr);
+    }
+
+    .sys-item:hover {
+      background: var(--card-h);
+    }
+
+    .sys-ic {
+      font-size: 16px;
+      margin-top: 2px;
+    }
+
+    .sys-c {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sys-t {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--t1);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sys-m {
+      font-size: 11px;
+      color: var(--t2);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .sys-d {
+      font-size: 9px;
+      color: var(--t3);
+      margin-top: 6px;
+    }
+
+    @media(max-width: 1000px) {
+      .sys-bar {
+        border-radius: 0;
+        margin-left: -24px;
+        margin-right: -24px;
+      }
+    }
+
+    .user-dd {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      width: 220px;
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      padding: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 1100;
+      animation: fadeIn .2s;
+    }
+
+    .user-dd.on {
+      display: flex;
+    }
+
+    .user-dd-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: var(--rs);
+      cursor: pointer;
+      transition: var(--tr);
+      color: var(--t1);
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+
+    .user-dd-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateX(4px);
+    }
+
+    .user-dd-sep {
+      height: 1px;
+      background: var(--brd);
+      margin: 6px 4px;
+    }
+
+
+    .sc:nth-child(2) .sc-v {
+      color: var(--ok)
+    }
+
+    .sc:nth-child(3) .sc-v {
+      color: var(--info)
+    }
+
+    .sc:nth-child(4) .sc-v {
+      color: var(--warn)
+    }
+
     /* Grid */
     .grid {
       display: grid;
@@ -499,6 +756,12 @@
     .search-box:focus {
       border-color: var(--ac);
       box-shadow: 0 0 0 3px var(--ac-g)
+    }
+
+    input.error,
+    select.error {
+      border-color: var(--err) !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
     }
 
     .filter-btn {
@@ -1084,7 +1347,7 @@
       display: flex;
       gap: 8px;
       padding: 5px 0;
-      border-bottom: 1px solid rgba(42, 53, 85, .3);
+      border-bottom: 1px solid var(--brd);
       font-size: 12px
     }
 
@@ -1109,7 +1372,7 @@
       padding: 14px;
       font-size: 13px;
       line-height: 1.6;
-      color: var(--t2);
+      color: var(--t1);
       white-space: pre-wrap;
       word-break: break-word;
       max-height: 360px;
@@ -1158,7 +1421,7 @@
       border: 1px solid var(--brd);
       border-radius: var(--r);
       padding: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: var(--sh);
       pointer-events: auto;
       animation: toastIn .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
@@ -1276,10 +1539,168 @@
         grid-template-columns: repeat(2, 1fr)
       }
     }
+
+    .wh-item {
+      transition: var(--tr);
+      border: 1px solid transparent;
+    }
+
+    .wh-item:hover {
+      background: rgba(99, 102, 241, 0.08);
+      border-color: var(--brd);
+    }
+
+    .notif-f {
+      padding: 8px 12px;
+      border-top: 1px solid var(--brd);
+      background: var(--input);
+      border-radius: 0 0 var(--r) var(--r);
+    }
+
+    .notif-f .pager {
+      padding: 0;
+      border: none;
+      gap: 4px;
+    }
+
+    .notif-f .pager-btn {
+      padding: 3px 6px;
+      font-size: 10px;
+    }
+
+    .notif-f .pager-info {
+      font-size: 10px;
+    }
+
+    /* Login Overlay */
+    .login-mo {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 10005;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-mo.on {
+      display: flex;
+      animation: fi .4s;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      padding: 40px;
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    body.on-login .app {
+      display: none;
+    }
+
+    body.on-login .login-mo {
+      display: flex;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    body.on-login .login-card {
+      box-shadow: none;
+      border: none;
+      background: transparent;
+    }
+
+
+    .login-logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--ac), #818cf8);
+      border-radius: 16px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 8px 16px rgba(99, 102, 241, 0.4);
+    }
+
+    .login-card h2 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--t1);
+    }
+
+    .login-card p {
+      font-size: 14px;
+      color: var(--t2);
+      margin-bottom: 30px;
+    }
+
+    .login-fi {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .login-fi label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--t2);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .login-input {
+      width: 100%;
+      background: var(--input);
+      border: 1px solid var(--brd);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: var(--t1);
+      font-size: 15px;
+      transition: var(--tr);
+    }
+
+    .login-input:focus {
+      border-color: var(--ac);
+      outline: none;
+      box-shadow: 0 0 0 4px var(--ac-g);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
   </style>
+  <script>
+    // Theme Pre-loader: Apply theme before components render to prevent flashing
+    (function () {
+      const theme = localStorage.getItem('mailhub_theme');
+      if (theme === 'light') {
+        document.documentElement.classList.add('light-mode');
+      }
+    })();
+  </script>
 </head>
 
 <body>
+  <div class="tc" id="tc"></div>
   <div class="app">
 
     <!-- Error Banner -->
@@ -1291,38 +1712,134 @@
     <!-- Header -->
     <header class="hdr">
       <div class="hdr-l">
-        <div class="logo">📧</div>
-        <div>
-          <h1>MailHub Dashboard</h1>
-          <p>Real-time Email Monitoring & Webhook Delivery</p>
+        <div class="logo">🚀</div>
+        <div class="hdr-info">
+          <h1>MailHub</h1>
+          <p>DASHBOARD TRUY XUẤT DỮ LIỆU MAIL</p>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end">
-        <button class="notif-bell" id="themeBtn" onclick="toggleTheme()" title="Đổi giao diện">🌓</button>
-        <div class="notif-wrapper">
-          <button class="notif-bell" id="notifBell" onclick="toggleNotif()">
-            🔔
-            <div class="notif-badge" id="notifBadge">0</div>
-          </button>
-          <div class="notif-dd" id="notifDD">
-            <div class="notif-h">
-              <span>Thông báo gần đây</span>
-            </div>
-            <div class="notif-list" id="notifList">
-              <div class="notif-empty">Không có thông báo mới</div>
+
+      <div class="hdr-r">
+        <div class="hdr-actions">
+          <button class="notif-bell" id="themeBtn" onclick="toggleTheme()" title="Đổi giao diện">🌓</button>
+
+          <div class="notif-wrapper">
+            <button class="notif-bell" id="notifBell" onclick="toggleNotif()">
+              🔔
+              <div class="notif-badge" id="notifBadge">0</div>
+            </button>
+            <div class="notif-dd" id="notifDD">
+              <div class="notif-h">
+                <span>Thông báo gần đây</span>
+              </div>
+              <div class="notif-list" id="notifList">
+                <div class="notif-empty">Không có thông báo mới</div>
+              </div>
+              <div class="notif-f" id="notifPager"></div>
             </div>
           </div>
+
+          <div style="width:1px; height:20px; background:var(--brd); margin:0 4px"></div>
+
+          <div id="userArea"></div>
         </div>
-        <button class="btn btn-sm" style="background:var(--input);border:1px solid var(--brd);color:var(--t2)"
-          onclick="openLogs()">📜 Logs</button>
-        <button class="btn btn-sm" style="background:var(--input);border:1px solid var(--brd);color:var(--t2)"
-          onclick="openCfg()">⚙️ Cài đặt</button>
-        <div class="ws-s off" id="wsS"><span class="dot"></span><span id="wsT">Đang kết nối...</span></div>
+
+        <div class="ws-s off" id="wsS">
+          <span class="dot"></span>
+          <span id="wsT">OFFLINE</span>
+        </div>
       </div>
     </header>
 
-    <!-- Stats -->
-    <div class="stats">
+    <!-- System Notification Bar -->
+    <div class="sys-bar" id="sysBar">
+      <div class="sys-ti">
+        <span>📢 THÔNG BÁO HỆ THỐNG</span>
+      </div>
+      <div class="sys-list" id="sysBarList"></div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid">
+      <!-- Left: Accounts -->
+      <div class="card">
+        <div class="card-h" style="padding-bottom:0; border-bottom:none">
+          <div class="tabs" style="margin-bottom:0; flex:1">
+            <button class="tab on" id="tlAcc" onclick="swLTab('acc')">👤 Tài khoản</button>
+            <button class="tab" id="tlWh" onclick="swLTab('wh')">🔗 Webhooks</button>
+          </div>
+          <button class="btn btn-p btn-sm" id="btnLAdd" onclick="onLAddClick()" style="margin-bottom:8px">＋
+            Thêm</button>
+        </div>
+        <div class="card-b">
+          <div id="accView">
+            <div class="toolbar">
+              <input class="search-box" id="accSearch" placeholder="🔍 Tìm..." oninput="onAccSearch()">
+              <select class="rows-select" id="accLimitSelect" onchange="onAccLimitChange()" title="Số hàng mỗi trang">
+                <option value="10" selected>10 hàng</option>
+                <option value="20">20 hàng</option>
+                <option value="50">50 hàng</option>
+              </select>
+            </div>
+            <div class="toolbar">
+              <button class="filter-btn active" data-f="all" onclick="setAccFilter('all')">Tất cả</button>
+              <button class="filter-btn" data-f="connected" onclick="setAccFilter('connected')">🟢 OK</button>
+              <button class="filter-btn" data-f="error" onclick="setAccFilter('error')">🔴 Lỗi</button>
+              <button class="filter-btn" data-f="stopped" onclick="setAccFilter('stopped')">⚫ Dừng</button>
+            </div>
+            <div id="accList">
+              <div class="ld">
+                <div class="spin"></div>Đang tải...
+              </div>
+            </div>
+            <div id="accPager"></div>
+          </div>
+          <div id="whView" style="display:none">
+            <div class="toolbar">
+              <input class="search-box" id="whSearch" placeholder="🔍 Tìm webhook..." oninput="renderWhs()">
+            </div>
+            <div id="whMainList">
+              <!-- Webhook list rendered here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Emails -->
+      <div class="card">
+        <div class="card-h">
+          <h2 id="rpT">📬 Hộp thư đến</h2>
+          <div style="display:flex; align-items:center; gap:8px">
+            <span id="rpS" style="font-size:11px;color:var(--t3)"></span>
+            <button class="btn btn-sm" id="btnWhAllLogs"
+              style="display:none; padding:2px 8px; font-size:10px; background:var(--input); border:1px solid var(--brd); color:var(--t2)"
+              onclick="selWebhook(null)">Xem tất cả Log</button>
+          </div>
+        </div>
+        <div class="card-b" id="mailTabsBox" style="padding:12px 22px 0">
+          <div class="tabs">
+            <button class="tab on" id="tAll" onclick="swTab('all')">📨 Tất cả hộp thư</button>
+            <button class="tab" id="tAcc" onclick="swTab('account')">👤 Theo tài khoản</button>
+          </div>
+        </div>
+        <div style="padding:0" id="rpB">
+          <!-- Emails -->
+          <div id="mailView">
+            <div class="ld">
+              <div class="spin"></div>Đang tải...
+            </div>
+          </div>
+          <!-- Webhook Logs -->
+          <div id="whLogsView" style="display:none; max-height:calc(100vh - 280px); overflow-y:auto; padding:0">
+            <div id="whLogsList"></div>
+          </div>
+        </div>
+        <div id="emailPager"></div>
+      </div>
+    </div>
+
+    <!-- Stats Moved to Bottom -->
+    <div class="stats" style="margin-top: 24px">
       <div class="sc">
         <div class="sc-l">Tài khoản hoạt động</div>
         <div class="sc-v" id="sA">0</div>
@@ -1338,59 +1855,6 @@
       <div class="sc">
         <div class="sc-l">Webhook thất bại</div>
         <div class="sc-v" id="sF">0</div>
-      </div>
-    </div>
-
-    <!-- Main Grid -->
-    <div class="grid">
-      <!-- Left: Accounts -->
-      <div class="card">
-        <div class="card-h">
-          <h2>👤 Tài khoản</h2>
-          <button class="btn btn-p btn-sm" onclick="openAdd()">＋ Thêm</button>
-        </div>
-        <div class="card-b">
-          <div class="toolbar">
-            <input class="search-box" id="accSearch" placeholder="🔍 Tìm..." oninput="onAccSearch()">
-            <select class="rows-select" id="accLimitSelect" onchange="onAccLimitChange()" title="Số hàng mỗi trang">
-              <option value="10" selected>10 hàng</option>
-              <option value="20">20 hàng</option>
-              <option value="50">50 hàng</option>
-            </select>
-          </div>
-          <div class="toolbar">
-            <button class="filter-btn active" data-f="all" onclick="setAccFilter('all')">Tất cả</button>
-            <button class="filter-btn" data-f="connected" onclick="setAccFilter('connected')">🟢 OK</button>
-            <button class="filter-btn" data-f="error" onclick="setAccFilter('error')">🔴 Lỗi</button>
-            <button class="filter-btn" data-f="stopped" onclick="setAccFilter('stopped')">⚫ Dừng</button>
-          </div>
-          <div id="accList">
-            <div class="ld">
-              <div class="spin"></div>Đang tải...
-            </div>
-          </div>
-          <div id="accPager"></div>
-        </div>
-      </div>
-
-      <!-- Right: Emails -->
-      <div class="card">
-        <div class="card-h">
-          <h2 id="rpT">📬 Hộp thư đến</h2>
-          <span id="rpS" style="font-size:11px;color:var(--t3)"></span>
-        </div>
-        <div class="card-b" style="padding:12px 22px 0">
-          <div class="tabs">
-            <button class="tab on" id="tAll" onclick="swTab('all')">📨 Tất cả hộp thư</button>
-            <button class="tab" id="tAcc" onclick="swTab('account')">👤 Theo tài khoản</button>
-          </div>
-        </div>
-        <div style="padding:0" id="rpB">
-          <div class="ld">
-            <div class="spin"></div>Đang tải...
-          </div>
-        </div>
-        <div id="emailPager"></div>
       </div>
     </div>
   </div>
@@ -1415,6 +1879,75 @@
     </div>
   </div>
 
+  <!-- Webhook Edit Modal (Bidirectional) -->
+  <div class="mo" id="whMo">
+    <div class="md md-s">
+      <div class="md-h">
+        <h3 id="whMoT">🔗 Cấu hình Webhook</h3><button class="md-x" onclick="closeWhMo()">✕</button>
+      </div>
+      <div class="md-b">
+        <div class="fg">
+          <label class="fl">Tên hiển thị</label>
+          <input class="fi" id="whName" placeholder="vd: Webhook xử lý đơn hàng">
+        </div>
+        <div class="fg">
+          <label class="fl">Webhook URL</label>
+          <input class="fi" id="whUrl" placeholder="https://n8n.bawui.com/webhook/...">
+        </div>
+        <div class="fg" style="display:flex; align-items:center; gap:8px; margin-top:8px">
+          <input type="checkbox" id="whEnabled" checked style="width:16px; height:16px; cursor:pointer">
+          <label for="whEnabled" style="font-size:13px; font-weight:500; cursor:pointer">Kích hoạt Webhook này</label>
+        </div>
+
+        <!-- Webhook Filters Section -->
+        <div class="fg" style="margin-top:16px; border-top:1px solid var(--brd); padding-top:12px">
+          <label class="fl"
+            style="color:var(--ac); font-size:12px; cursor:pointer; user-select:none; display:inline-flex; align-items:center; gap:6px"
+            onclick="toggleWhFilters()">
+            🔍 Bộ lọc Mail (Tùy chọn) <span id="whFilterIcon"
+              style="font-size:10px; transition:transform 0.2s; transform:rotate(-90deg)">▼</span>
+          </label>
+          <div id="whFilterBox"
+            style="display:none; background:var(--input); border:1px solid var(--brd); border-radius:var(--rs); padding:12px; margin-top:8px">
+            <div class="fg">
+              <label class="fl" style="font-size:10px">Tiêu đề (Subject) - vd: OTP|Mã xác thực</label>
+              <input class="fi" id="whFilterSubject" placeholder="Chứa từ khóa hoặc Regex...">
+            </div>
+            <div class="fg">
+              <label class="fl" style="font-size:10px">Người gửi (From) - vd: bank.com</label>
+              <input class="fi" id="whFilterFrom" placeholder="Chứa email hoặc domain...">
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <label class="fl" style="font-size:10px">Nội dung (Body) - vd: (số dư|biến động)</label>
+              <input class="fi" id="whFilterText" placeholder="Chứa từ khóa hoặc Regex...">
+            </div>
+            <div style="font-size:9px; color:var(--t3); margin-top:8px">💡 Để trống để nhận tất cả. Hỗ trợ <b>Regex</b>.
+            </div>
+          </div>
+        </div>
+        <div class="fg" style="margin-top:16px; border-top:1px solid var(--brd); padding-top:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <label class="fl" style="margin:0">Chọn các Mail sử dụng Webhook này</label>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-sm" style="font-size:9px;padding:2px 6px"
+                onclick="toggleChecks('whAccList', true)">Tất cả</button>
+              <button class="btn btn-sm" style="font-size:9px;padding:2px 6px"
+                onclick="toggleChecks('whAccList', false)">Bỏ chọn</button>
+            </div>
+          </div>
+          <div id="whAccList"
+            style="max-height:200px;overflow-y:auto;background:var(--input);border:1px solid var(--brd);border-radius:var(--rs);padding:8px;display:flex;flex-direction:column;gap:4px">
+            <!-- Mail checklist here -->
+          </div>
+        </div>
+      </div>
+      <div class="md-f">
+        <button class="btn btn-d btn-sm" onclick="closeWhMo()">Hủy</button>
+        <button class="btn btn-p" onclick="doWhSave()">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Settings Modal -->
   <div class="mo" id="cfgMo">
     <div class="md md-s">
@@ -1422,11 +1955,16 @@
         <h3>⚙️ Cài đặt hệ thống</h3><button class="md-x" onclick="closeCfg()">✕</button>
       </div>
       <div class="md-b">
-        <div class="fg">
-          <label class="fl">Webhook URL (n8n)</label>
-          <input class="fi" id="cWebhook" placeholder="https://n8n.example.com/webhook/...">
+        <div class="fg" style="margin-top:0">
+          <label class="fl">Cài đặt chung</label>
+          <div
+            style="background:var(--input); border:1px solid var(--brd); border-radius:var(--rs); padding:12px; display:flex; flex-direction:column; gap:12px">
+            <div class="fg" style="margin-bottom:0">
+              <label class="fl" style="font-size:10px">Thời gian giữa các lần kết nối (ms)</label>
+              <input class="fi" id="cStagger" type="number" placeholder="500">
+            </div>
+          </div>
         </div>
-
       </div>
       <div class="md-f">
         <button class="btn btn-d btn-sm" onclick="closeCfg()">Hủy</button>
@@ -1439,7 +1977,7 @@
   <div class="mo" id="addMo">
     <div class="md md-s">
       <div class="md-h">
-        <h3>➕ Thêm tài khoản</h3><button class="md-x" onclick="closeAdd()">✕</button>
+        <h3 id="addMoT">➕ Thêm tài khoản</h3><button class="md-x" onclick="closeAdd()">✕</button>
       </div>
       <div class="md-b">
         <div class="fg">
@@ -1459,92 +1997,138 @@
           <div class="fg">
             <label class="fl" id="nPLab">Mật khẩu</label>
             <input class="fi" id="nP" type="password" placeholder="Nhập mật khẩu...">
-          </div>
-        </div>
-
-        <div id="authCookieField" style="display:none">
-          <div class="fg">
-            <label class="fl">Cookie / JSON String</label>
-            <textarea class="fi" id="nC" rows="3" placeholder="Dán cookie tại đây..."></textarea>
-          </div>
-        </div>
-
-        <div class="fg">
-          <label class="fl">Nhà cung cấp</label>
-          <select class="fi" id="nPreset" onchange="onPresetChange()">
-            <option value="gmail">Gmail</option>
-            <option value="outlook">Outlook / Hotmail</option>
-            <option value="yahoo">Yahoo Mail</option>
-            <option value="icloud">iCloud Mail</option>
-            <option value="zoho">Zoho Mail</option>
-            <option value="yandex">Yandex Mail</option>
-            <option value="custom">Tùy chỉnh (IMAP)</option>
-          </select>
-        </div>
-
-        <div id="customImapFields"
-          style="display:none; border-top: 1px solid var(--brd); padding-top: 12px; margin-top: 12px;">
-          <div class="fg">
-            <label class="fl">IMAP Host</label>
-            <input class="fi" id="nH" placeholder="imap.example.com">
-          </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <div class="fg">
-              <label class="fl">Port</label>
-              <input class="fi" id="nPo" type="number" value="993">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <label class="fl" style="margin:0">Gửi Webhook tới</label>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-sm" style="font-size:9px;padding:2px 6px"
+                  onclick="toggleChecks('nWebhookList', true)">Tất cả</button>
+                <button class="btn btn-sm" style="font-size:9px;padding:2px 6px"
+                  onclick="toggleChecks('nWebhookList', false)">Bỏ chọn</button>
+              </div>
             </div>
+            <div id="nWebhookList"
+              style="max-height:120px;overflow-y:auto;background:var(--input);border:1px solid var(--brd);border-radius:var(--rs);padding:8px;display:flex;flex-direction:column;gap:4px">
+              <!-- Checkboxes here -->
+            </div>
+            <div style="font-size:10px;color:var(--t3);margin-top:4px">Nếu bỏ trống, chỉ gửi tới Webhook mặc định của
+              hệ thống.</div>
+          </div>
+
+          <div id="authCookieField" style="display:none">
             <div class="fg">
-              <label class="fl">Secure (SSL)</label>
-              <select class="fi" id="nS">
-                <option value="true">Có (SSL/TLS)</option>
-                <option value="false">Không (No SSL)</option>
-              </select>
+              <label class="fl">Cookie / JSON String</label>
+              <textarea class="fi" id="nC" rows="3" placeholder="Dán cookie tại đây..."></textarea>
             </div>
           </div>
-        </div>
 
-        <p style="font-size:11px;color:var(--t3);margin-top:12px">🔒 Mật khẩu sẽ được mã hóa AES-256-GCM</p>
+          <div class="fg">
+            <label class="fl">Nhà cung cấp</label>
+            <select class="fi" id="nPreset" onchange="onPresetChange()">
+              <option value="gmail">Gmail</option>
+              <option value="outlook">Outlook / Hotmail</option>
+              <option value="yahoo">Yahoo Mail</option>
+              <option value="icloud">iCloud Mail</option>
+              <option value="zoho">Zoho Mail</option>
+              <option value="yandex">Yandex Mail</option>
+              <option value="custom">Tùy chỉnh (IMAP)</option>
+            </select>
+          </div>
+
+          <div id="customImapFields"
+            style="display:none; border-top: 1px solid var(--brd); padding-top: 12px; margin-top: 12px;">
+            <div class="fg">
+              <label class="fl">IMAP Host</label>
+              <input class="fi" id="nH" placeholder="imap.example.com">
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="fg">
+                <label class="fl">Port</label>
+                <input class="fi" id="nPo" type="number" value="993">
+              </div>
+              <div class="fg">
+                <label class="fl">Secure (SSL)</label>
+                <select class="fi" id="nS">
+                  <option value="true">Có (SSL/TLS)</option>
+                  <option value="false">Không (No SSL)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <p style="font-size:11px;color:var(--t3);margin-top:12px">🔒 Mật khẩu sẽ được mã hóa AES-256-GCM</p>
+        </div>
+        <div class="md-f">
+          <button class="btn btn-d btn-sm" onclick="closeAdd()">Hủy</button>
+          <button class="btn btn-p" id="addBtn" onclick="doAdd()">Thêm & Bắt đầu</button>
+        </div>
       </div>
-      <div class="md-f"><button class="btn btn-d btn-sm" onclick="closeAdd()">Hủy</button><button class="btn btn-p"
-          onclick="doAdd()">Thêm & Bắt đầu</button></div>
     </div>
+
+    <!-- Email Detail Modal -->
+    <div class="mo" id="emMo">
+      <div class="md md-l">
+        <div class="md-h">
+          <h3 id="emT">📧 Chi tiết</h3><button class="md-x" onclick="closeEm()">✕</button>
+        </div>
+        <div class="md-b" id="emB">
+          <div class="ld">
+            <div class="spin"></div>Đang tải...
+          </div>
+        </div>
+        <div class="md-f"><button class="btn btn-d btn-sm" onclick="closeEm()">Đóng</button></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Email Detail Modal -->
-  <div class="mo" id="emMo">
-    <div class="md md-l">
-      <div class="md-h">
-        <h3 id="emT">📧 Chi tiết</h3><button class="md-x" onclick="closeEm()">✕</button>
+  <!-- Login Modal -->
+  <div class="login-mo" id="loginMo">
+    <div class="login-card">
+      <div class="login-logo">🚀</div>
+      <h2>Chào mừng trở lại</h2>
+      <p>Vui lòng đăng nhập để quản lý MailHub</p>
+      <div class="login-fi">
+        <label>Tài khoản</label>
+        <input type="text" class="login-input" id="loginUser" placeholder="Nhập tên đăng nhập...">
       </div>
-      <div class="md-b" id="emB">
-        <div class="ld">
-          <div class="spin"></div>Đang tải...
-        </div>
+      <div class="login-fi">
+        <label>Mật khẩu</label>
+        <input type="password" class="login-input" id="loginPass" placeholder="Nhập mật khẩu...">
       </div>
-      <div class="md-f"><button class="btn btn-d btn-sm" onclick="closeEm()">Đóng</button></div>
+      <button class="btn btn-p login-btn" id="loginBtn" onclick="doLogin()">Đăng nhập</button>
+      <p id="loginErr" style="color:var(--err); margin-top: 15px; font-weight:600; font-size:12px; display:none"></p>
     </div>
   </div>
-
-  <div class="tc" id="tc"></div>
 
   <script>
-    let ws, wS = {}, selAcc = null, curTab = 'all', accPage = 1,
+    let ws, wS = {}, selAcc = null, selWh = null, curTab = 'all', curLTab = 'wh', accPage = 1,
       accLimit = parseInt(localStorage.getItem('mailhub_acc_limit') || '10'),
-      accFilter = 'all', accSearchQ = '', emailPage = 1, inboxLoaded = false;
-    let notifications = [];
+      accFilter = 'all', accSearchQ = '', emailPage = 1, inboxLoaded = false, notifPage = 1,
+      userRole = 'viewer', userName = '';
+    let notifications = [], webhooks = [], editingAccId = null, editingWhId = null, notifMeta = {};
 
     // ── Utils ──
     const $ = id => document.getElementById(id);
+    function toggleChecks(parentId, state) {
+      const container = $(parentId);
+      if (container) {
+        container.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = state);
+      }
+    }
     function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML }
     function toast(title, msg, type = 'in', extra = {}) {
+      if (!title) return;
       const icons = { ok: '✅', er: '❌', in: 'ℹ️', mail: '📩' };
-      const c = $('tc'), d = document.createElement('div');
+      const c = $('tc');
+      if (!c) { console.error('Toast container not found'); return; }
+      const d = document.createElement('div');
       d.className = `tt ${type}`;
 
-      const icon = icons[type === 'ok' && (title.includes('Email') || title.includes('Mới')) ? 'mail' : type] || '🔔';
+      const isMail = (title.includes('Email') || title.includes('Mới') || title.includes('📩'));
+      const icon = icons[type === 'ok' && isMail ? 'mail' : type] || '🔔';
       let avatarHtml = `<div class="tt-ic sys">${icon}</div>`;
       if (extra.email) {
-        const initial = extra.email[0].toUpperCase();
+        const initial = extra.email[0]?.toUpperCase() || '?';
         avatarHtml = `<div class="tt-ic">${initial}</div>`;
       }
 
@@ -1552,7 +2136,7 @@
         ${avatarHtml}
         <div class="tt-c">
           <div class="tt-t">${esc(title)}</div>
-          <div class="tt-m">${esc(msg)}</div>
+          <div class="tt-m">${esc(msg || '')}</div>
         </div>
       `;
       c.appendChild(d);
@@ -1570,18 +2154,25 @@
       const icons = { ok: '✅', er: '❌', in: 'ℹ️', mail: '📩' };
       const icon = icons[type === 'ok' && (title.includes('Email') || title.includes('Mới')) ? 'mail' : type] || '🔔';
       notifications.unshift({ title, message, type, icon, email, date: new Date().toISOString() });
-      if (notifications.length > 10) notifications.pop();
-      updateNotifUI();
+      if (notifications.length > 20) notifications.pop();
+      if (notifPage === 1) updateNotifUI(); // Only auto-refresh if on first page
     }
 
-    async function loadNotifs() {
+    async function loadNotifs(p = 1) {
       try {
-        const r = await api('/notifications');
+        notifPage = p;
+        const r = await api(`/notifications?page=${p}&limit=10`);
         if (r.notifications) {
           notifications = r.notifications;
+          notifMeta = { totalCount: r.totalCount, page: r.page, totalPages: r.totalPages };
           updateNotifUI(true); // silent update
         }
       } catch (e) { notifications = []; }
+      // Also load webhooks for various UIs
+      try {
+        const d = await api('/config');
+        webhooks = d.config?.webhooks || [];
+      } catch (e) { }
     }
 
     function toggleNotif() {
@@ -1597,6 +2188,7 @@
       if (notifications.length === 0) {
         l.innerHTML = '<div class="notif-empty">Không có thông báo mới</div>';
         updBadgeCount(0);
+        $('notifPager').innerHTML = '';
         return;
       }
 
@@ -1616,15 +2208,38 @@
               <div class="notif-m">${esc(n.message || n.m)}</div>
               <div class="notif-d">${fmtDate(n.date)}</div>
             </div>
-          </div>
-        `}).join('');
+          </div>`;
+      }).join('');
+
+      // Render Pager in the dropdown footer
+      if (notifMeta.totalPages > 1) {
+        renderPager('notifPager', notifMeta.page, notifMeta.totalPages, notifMeta.totalCount, p => loadNotifs(p));
+      } else {
+        $('notifPager').innerHTML = '';
+      }
 
       if (!silent && !$('notifDD').classList.contains('on')) {
         unreadNotifCount++;
         updBadgeCount(unreadNotifCount);
       } else if (silent) {
-        updBadgeCount(unreadNotifCount); // Initial load sync
+        updBadgeCount(unreadNotifCount);
       }
+
+      // Update Horizontal System Bar (3 latest)
+      const sbl = $('sysBarList');
+      const latest = notifications.slice(0, 3);
+      sbl.innerHTML = latest.map(n => {
+        const icon = n.icon || '🔔';
+        return `
+          <div class="sys-item">
+            <div class="sys-ic">${icon}</div>
+            <div class="sys-c" style="display:flex; align-items:center; gap:20px; width:100%">
+              <div class="sys-t" style="min-width:180px; margin:0">${esc(n.title)}</div>
+              <div class="sys-m">${esc(n.message)}</div>
+              <div class="sys-d" style="margin:0; min-width:80px; text-align:right">${fmtDate(n.date)}</div>
+            </div>
+          </div>`;
+      }).join('');
     }
 
     function updBadgeCount(c) {
@@ -1635,14 +2250,167 @@
       b.classList.toggle('on', c > 0);
     }
 
-    // Close dropdown when picking outside
+    // Close dropdowns when picking outside
     document.addEventListener('click', e => {
       const b = $('notifBell'), dd = $('notifDD');
       if (b && dd && !b.contains(e.target) && !dd.contains(e.target)) {
         dd.classList.remove('on');
       }
+      const ub = $('roleBadge'), udd = $('userDD');
+      if (ub && udd && !ub.contains(e.target) && !udd.contains(e.target)) {
+        udd.classList.remove('on');
+      }
     });
-    async function api(p, m = 'GET', b = null) { const o = { method: m, headers: {} }; if (b) { o.headers['content-type'] = 'application/json'; o.body = JSON.stringify(b) } return (await fetch(`/api${p}`, o)).json() }
+    async function api(p, m = 'GET', b = null) {
+      const o = { method: m, headers: {} };
+      if (b) { o.headers['content-type'] = 'application/json'; o.body = JSON.stringify(b) }
+      const res = await fetch(`/api${p}`, o);
+      if (res.status === 401) {
+        showLogin();
+        throw new Error('Unauthorized');
+      }
+      if (res.status === 403) {
+        const d = await res.json();
+        toast('Từ chối', d.error || 'Bạn không có quyền này', 'er');
+        throw new Error('Forbidden');
+      }
+      return res.json();
+    }
+
+    function showLogin() {
+      $('loginMo').classList.add('on');
+      document.body.classList.add('on-login');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideLogin() {
+      $('loginMo').classList.remove('on');
+      document.body.classList.remove('on-login');
+      document.body.style.overflow = '';
+    }
+
+    async function doLogin() {
+      const u = $('loginUser').value.trim();
+      const p = $('loginPass').value.trim();
+      const err = $('loginErr');
+      const btn = $('loginBtn');
+
+      if (!u || !p) {
+        err.textContent = 'Vui lòng nhập đầy đủ thông tin';
+        err.style.display = 'block';
+        return;
+      }
+
+      err.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Đang đăng nhập...';
+
+      try {
+        const r = await api('/login', 'POST', { username: u, password: p });
+        if (r.success) {
+          toast('Thành công', 'Đã đăng nhập vào hệ thống', 'ok');
+          // Simple redirect back: 
+          const next = new URLSearchParams(window.location.search).get('next') || '/';
+          window.location.href = next;
+        } else {
+          err.textContent = r.error || 'Lỗi đăng nhập';
+          err.style.display = 'block';
+        }
+      } catch (e) {
+        if (e.message !== 'Unauthorized') {
+          err.textContent = 'Thất bại: Sai thông tin hoặc lỗi máy chủ';
+          err.style.display = 'block';
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Đăng nhập';
+      }
+    }
+
+    async function doLogout() {
+      if (!confirm('Bạn muốn đăng xuất?')) return;
+      try {
+        await api('/logout', 'POST');
+        window.location.reload();
+      } catch { }
+    }
+
+    async function checkAuth() {
+      const isLogP = window.location.pathname === '/login';
+      try {
+        const r = await api('/me');
+        if (r.authenticated) {
+          if (isLogP) {
+            window.location.href = new URLSearchParams(window.location.search).get('next') || '/';
+            return;
+          }
+          userRole = r.role || 'viewer';
+          userName = r.username || 'N/A';
+          hideLogin();
+          initApp();
+        }
+      } catch (e) {
+        if (!isLogP) {
+          const next = encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = `/login?next=${next}`;
+        } else {
+          showLogin();
+        }
+      }
+    }
+
+    function initApp() {
+      loadTheme();
+      loadNotifs();
+      $('accLimitSelect').value = accLimit;
+      renderRoleBadge();
+      wsConnect(); loadAccs(); swLTab('wh'); showInboxPrompt(); setInterval(refStats, 30000);
+    }
+
+    function toggleUserDD() {
+      const dd = $('userDD');
+      if (dd) dd.classList.toggle('on');
+    }
+
+    function renderRoleBadge() {
+      const area = $('userArea');
+      if (!area) return;
+
+      const roles = {
+        admin: { t: 'ADMIN', c: 'var(--ac)', bg: 'var(--ac-g)' },
+        editor: { t: 'EDITOR', c: 'var(--warn)', bg: 'var(--warn-bg)' },
+        viewer: { t: 'VIEWER', c: 'var(--t3)', bg: 'var(--input)' }
+      };
+
+      const info = roles[userRole] || roles.viewer;
+      const initial = (userName || '?')[0].toUpperCase();
+      const colors = ['#6366f1', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6'];
+      let hash = 0;
+      for (let i = 0; i < userName.length; i++) hash = userName.charCodeAt(i) + ((hash << 5) - hash);
+      const color = colors[Math.abs(hash) % colors.length];
+
+      area.innerHTML = `
+        <div class="user-wrapper">
+          <div id="roleBadge" class="ws-s user-badge" onclick="toggleUserDD()" style="padding:4px 10px 4px 4px; border-radius:20px; background:var(--card-h); border-color:var(--brd); color:inherit">
+            <div style="width:26px; height:26px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; box-shadow:0 2px 5px rgba(0,0,0,0.2)">${initial}</div>
+            <div style="display:flex; flex-direction:column; line-height:1.1; text-align:left; margin-left:8px">
+              <div style="font-size:13px; color:var(--t1); font-weight:700">${esc(userName)}</div>
+              <div style="font-size:8px; color:${info.c}; opacity:0.8; letter-spacing:1px">${info.t}</div>
+            </div>
+            <span style="font-size:8px; opacity:0.5; margin-left:4px">▼</span>
+          </div>
+          <div class="user-dd" id="userDD">
+            <div style="padding:10px 14px; border-bottom:1px solid var(--brd); margin-bottom:4px">
+              <div style="font-size:11px; color:var(--t3); text-transform:uppercase; font-weight:700">Tài khoản cá nhân</div>
+            </div>
+            <button class="user-dd-item" onclick="openCfg()"><span>⚙️</span> Cài đặt hệ thống</button>
+            <button class="user-dd-item" onclick="openLogs()"><span>📜</span> Xem nhật ký (Logs)</button>
+            <div class="user-dd-sep"></div>
+            <button class="user-dd-item" onclick="doLogout()" style="color:var(--err)"><span>🚪</span> Đăng xuất</button>
+          </div>
+        </div>
+      `;
+    }
     function fmtDate(iso) { try { const d = new Date(iso), n = new Date(), m = Math.floor((n - d) / 60000); if (m < 1) return 'Vừa xong'; if (m < 60) return m + 'p trước'; if (m < 1440) return Math.floor(m / 60) + 'h trước'; return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) } catch { return iso } }
     function fmtSize(b) { if (!b) return '0B'; if (b < 1024) return b + 'B'; if (b < 1048576) return (b / 1024).toFixed(1) + 'KB'; return (b / 1048576).toFixed(1) + 'MB' }
     function escAttr(s) { return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
@@ -1651,17 +2419,30 @@
     function wsConnect() {
       const pr = location.protocol === 'https:' ? 'wss' : 'ws';
       ws = new WebSocket(`${pr}://${location.host}`);
-      ws.onopen = () => { $('wsS').className = 'ws-s on'; $('wsT').textContent = 'Đã kết nối' };
-      ws.onclose = () => { $('wsS').className = 'ws-s off'; $('wsT').textContent = 'Mất kết nối'; setTimeout(wsConnect, 3000) };
+      ws.onopen = () => { $('wsS').className = 'ws-s on'; $('wsT').textContent = 'LIVE' };
+      ws.onclose = () => { $('wsS').className = 'ws-s off'; $('wsT').textContent = 'OFFLINE'; setTimeout(wsConnect, 3000) };
       ws.onmessage = e => {
         const d = JSON.parse(e.data);
         if (d.type === 'init') { wS = d.watchers || {}; updStats(d.stats); loadAccs(); loadEmails(); updBanner() }
         else if (d.type === 'status') { wS[d.accountId] = { ...wS[d.accountId], status: d.status, error: d.error || null }; loadAccs(); updBanner() }
         else if (d.type === 'email') {
           const from = d.from || 'Không rõ';
-          toast('Email mới nhận được', `Từ: ${from}\nĐến: ${d.email}\nNội dung: ${d.subject}`, d.success ? 'ok' : 'er', { email: d.email });
+          // 1. Toast for email receipt
+          toast('📩 Email mới nhận được', `Tài khoản: ${d.email}\nTừ: ${from}\nTiêu đề: ${d.subject}`, 'ok', { email: d.email });
+
+          // 2. Toast for webhook results (if any)
+          if (d.webhookResults && d.webhookResults.length > 0) {
+            const whDetails = d.webhookResults.map(r => `${r.name}: ${r.success ? '✅' : '❌'}`).join(', ');
+            toast(d.success ? '🔗 Webhook thành công' : '⚠️ Webhook thất bại', `Kết quả Webhook cho thư: ${d.subject}\nChi tiết: ${whDetails}`, d.success ? 'ok' : 'er', { email: d.email });
+          }
+
           updStats();
+          if (curLTab === 'wh') loadWhLogs();
           if (inboxLoaded || curTab === 'account') loadEmails();
+        }
+        else if (d.type === 'webhook_error') {
+          toast('Lỗi Webhook', d.message, 'er', { email: d.email });
+          if (curLTab === 'wh') loadWhLogs();
         }
       };
     }
@@ -1681,19 +2462,19 @@
 
     // ── Accounts ──
     function toggleTheme() {
-      const isDark = !document.body.classList.contains('light-mode');
+      const isDark = !document.documentElement.classList.contains('light-mode');
       if (isDark) {
-        document.body.classList.add('light-mode');
+        document.documentElement.classList.add('light-mode');
         localStorage.setItem('mailhub_theme', 'light');
       } else {
-        document.body.classList.remove('light-mode');
+        document.documentElement.classList.remove('light-mode');
         localStorage.setItem('mailhub_theme', 'dark');
       }
     }
 
     function loadTheme() {
       const t = localStorage.getItem('mailhub_theme');
-      if (t === 'light') document.body.classList.add('light-mode');
+      if (t === 'light') document.documentElement.classList.add('light-mode');
     }
 
     let accDebounce;
@@ -1712,7 +2493,302 @@
         const d = await api(`/accounts?${q}`);
         renderAccs(d.accounts || []);
         renderPager('accPager', d.page, d.totalPages, d.totalCount, p => { accPage = p; loadAccs() });
+        if (curLTab === 'wh') {
+          renderWhs();
+          loadWhLogs();
+        }
       } catch { $('accList').innerHTML = '<div class="empty"><div class="ei-c">⚠️</div><p>Lỗi tải</p></div>' }
+    }
+
+    // ── Left Side Tabs (Acc vs Wh) ──
+    function swLTab(t) {
+      curLTab = t;
+      const isWh = t === 'wh';
+      $('tlAcc').className = `tab ${t === 'acc' ? 'on' : ''}`;
+      $('tlWh').className = `tab ${isWh ? 'on' : ''}`;
+      $('accView').style.display = t === 'acc' ? 'block' : 'none';
+      $('whView').style.display = isWh ? 'block' : 'none';
+
+      // Switch Right Panel
+      $('rpT').textContent = isWh ? '📜 Webhook Logs' : '📬 Hộp thư đến';
+      $('rpS').textContent = isWh ? 'Lịch sử gửi thông báo gần đây' : '';
+      $('mailView').style.display = isWh ? 'none' : 'block';
+      $('whLogsView').style.display = isWh ? 'block' : 'none';
+      $('emailPager').style.display = isWh ? 'none' : 'block';
+
+      // Hide/Show the mail tabs container
+      const mailTabs = $('mailTabsBox');
+      if (mailTabs) mailTabs.style.display = isWh ? 'none' : 'block';
+
+      if (isWh) {
+        renderWhs();
+        loadWhLogs();
+      } else {
+        loadEmails();
+      }
+    }
+
+    async function loadWhLogs() {
+      const list = $('whLogsList');
+      if (!list) return;
+      const btnAll = $('btnWhAllLogs');
+      if (btnAll) btnAll.style.display = selWh ? 'inline-block' : 'none';
+
+      try {
+        const q = selWh ? `?webhookId=${selWh}` : '';
+        const d = await api(`/logs/webhooks${q}`);
+        renderWhLogs(d.logs || []);
+      } catch (e) { list.innerHTML = 'Lỗi tải log...'; }
+    }
+
+    function selWebhook(id) {
+      if (selWh === id) selWh = null; // Toggle off if clicked again
+      else selWh = id;
+      renderWhs();
+      loadWhLogs();
+    }
+
+    function renderWhLogs(logs) {
+      const list = $('whLogsList');
+      if (logs.length === 0) {
+        list.innerHTML = '<div class="empty"><div class="ei-c">📜</div><p>Chưa có lịch sử webhook</p></div>';
+        return;
+      }
+      list.innerHTML = logs.map(l => {
+        const isErr = l.level === 'error' || l.level === 'warn';
+        const extra = l.message.includes('failed') || isErr ? `<div style="font-size:10px;color:var(--t3);margin-top:4px">${esc(l.message)}</div>` : '';
+        return `
+          <div style="padding:10px;border-bottom:1px solid var(--brd);display:flex;gap:12px;align-items:flex-start">
+            <div style="width:36px;height:36px;border-radius:50%;background:${isErr ? 'var(--er-bg)' : 'var(--ok-bg)'};color:${isErr ? 'var(--er)' : 'var(--ok)'};display:flex;align-items:center;justify-content:center;font-size:18px">
+              ${isErr ? '❌' : '✅'}
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-weight:600;font-size:13px">${esc(l.tag)}</span>
+                <span style="font-size:11px;color:var(--t3)">${new Date(l.time).toLocaleString()}</span>
+              </div>
+              <div style="font-size:12px;margin-top:2px">
+                ${l.accountId ? `<span style="color:var(--ac)">[${esc(l.accountId)}]</span> ` : ''}
+                ${esc(l.message)}
+              </div>
+              ${l.uid ? `<div style="font-size:10px;color:var(--t3)">Email UID: ${l.uid}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    async function renderWhs() {
+      const list = $('whMainList');
+      if (!list) return;
+      const search = $('whSearch').value.toLowerCase();
+
+      // Show loading if list is empty or first time
+      if (!list.innerHTML) list.innerHTML = '<div class="ld"><div class="spin"></div>Đang tải...</div>';
+
+      try {
+        const d = await api('/config');
+        webhooks = d.config?.webhooks || []; // Update global
+        const accsData = await api('/accounts?limit=999');
+        const allAccs = accsData.accounts || [];
+
+        let filtered = webhooks;
+        if (search) filtered = webhooks.filter(w => (w.name || '').toLowerCase().includes(search) || (w.url || '').toLowerCase().includes(search));
+
+        if (filtered.length === 0) {
+          list.innerHTML = '<div class="empty"><div class="ei-c">🔗</div><p>Không tìm thấy webhook nào</p></div>';
+          return;
+        }
+
+        const allWhsHtml = `
+            <div class="acc ${selWh === null ? 'on' : ''}" onclick="selWebhook(null)" style="margin-bottom:12px; border-style:dashed">
+              <div class="acc-i">
+                <div class="acc-av" style="background:var(--ac-g);color:var(--ac)">📜</div>
+                <div style="min-width:0">
+                  <div class="acc-e">Tất cả Webhook</div>
+                  <div class="acc-id">Hiển thị lịch sử gửi của toàn bộ hệ thống</div>
+                </div>
+              </div>
+              <div class="acc-s connected" style="background:var(--ok-bg);color:var(--ok)">${webhooks.length} cái</div>
+            </div>
+            <div style="font-size:10px; color:var(--t3); margin: 8px 0; text-transform:uppercase; letter-spacing:1px; font-weight:700">Danh sách chi tiết</div>
+          `;
+
+        list.innerHTML = allWhsHtml + filtered.map(w => {
+          const connectedAccs = allAccs.filter(a => a.webhookIds?.includes(w.id));
+          const isEnabled = w.enabled !== false;
+          const st = isEnabled ? 'connected' : 'stopped';
+          const lb = isEnabled ? '🟢 Hoạt động' : '⚫ Đã dừng';
+          const isSelected = selWh === w.id;
+
+          return `
+              <div class="acc ${isSelected ? 'on' : ''}" onclick="selWebhook('${w.id}')">
+                <div class="acc-i">
+                  <div class="acc-av" style="background:var(--warn-bg);color:var(--warn)">🔗</div>
+                  <div style="min-width:0">
+                    <div class="acc-e">${esc(w.name || w.id)}</div>
+                    <div class="acc-id" style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${esc(w.url)}</div>
+                  </div>
+                </div>
+                <div class="acc-s ${st}">${lb}</div>
+                <div class="acc-s connected" style="background:var(--info-bg);color:var(--info)">${connectedAccs.length} Mail</div>
+                <div class="acc-a" onclick="event.stopPropagation()">
+                  ${isEnabled ? `<button class="btn btn-d btn-ic" onclick="toggleWh('${w.id}', false)" title="Dừng">⏹</button>` : `<button class="btn btn-ok btn-ic" onclick="toggleWh('${w.id}', true)" title="Bắt đầu">▶</button>`}
+                  <button class="btn btn-sm btn-ic" style="background:var(--input);color:var(--t2)" onclick="openWhEdit('${w.id}')" title="Sửa">✏️</button>
+                  <button class="btn btn-d btn-ic" onclick="delWh('${w.id}')" title="Xóa">🗑</button>
+                </div>
+              </div>`;
+        }).join('');
+      } catch (e) { list.innerHTML = 'Lỗi tải...'; }
+    }
+
+    function onLAddClick() {
+      if (curLTab === 'acc') openAdd();
+      else openWhAdd();
+    }
+
+    function toggleWhFilters(forceState) {
+      const box = $('whFilterBox'), icon = $('whFilterIcon');
+      if (!box || !icon) return;
+      const isHidden = box.style.display === 'none';
+      const show = forceState !== undefined ? forceState : isHidden;
+      box.style.display = show ? 'block' : 'none';
+      icon.style.transform = show ? 'rotate(0deg)' : 'rotate(-90deg)';
+    }
+
+    function openWhAdd() {
+      editingWhId = null;
+      $('whMo').classList.add('on');
+      $('whMoT').textContent = '➕ Thêm Webhook mới';
+      $('whName').value = '';
+      $('whUrl').value = '';
+      $('whEnabled').checked = true;
+      $('whFilterSubject').value = '';
+      $('whFilterFrom').value = '';
+      $('whFilterText').value = '';
+      $('whName').classList.remove('error');
+      $('whUrl').classList.remove('error');
+      toggleWhFilters(false);
+      renderWhAccChecklist([]);
+    }
+
+    async function toggleWh(id, state) {
+      try {
+        const r = await api(`/webhooks/${id}`, 'PUT', { enabled: state });
+        if (r.error) { toast('Lỗi', r.error, 'er'); return; }
+        toast(state ? 'Kích hoạt' : 'Tạm dừng', `Đã ${state ? 'bật' : 'tắt'} webhook`, 'ok');
+        renderWhs();
+      } catch (e) { toast('Lỗi', 'Không thể thực hiện', 'er'); }
+    }
+
+    async function openWhEdit(id) {
+      if (!webhooks || webhooks.length === 0) {
+        try {
+          const d = await api('/config');
+          webhooks = d.config?.webhooks || [];
+        } catch (e) { }
+      }
+      editingWhId = id;
+      const wh = webhooks.find(w => w.id === id);
+      if (!wh) { toast('Lỗi', 'Không tìm thấy webhook', 'er'); return; }
+
+      $('whMo').classList.add('on');
+      $('whMoT').textContent = '🔗 Sửa Webhook';
+      $('whName').value = wh.name || '';
+      $('whUrl').value = wh.url || '';
+      $('whEnabled').checked = wh.enabled !== false;
+
+      // Fill filters if any
+      const f = wh.filters || {};
+      $('whFilterSubject').value = f.subject || '';
+      $('whFilterFrom').value = f.from || '';
+      $('whFilterText').value = f.text || '';
+      $('whName').classList.remove('error');
+      $('whUrl').classList.remove('error');
+
+      const hasFilter = !!(f.subject || f.from || f.text);
+      toggleWhFilters(hasFilter);
+
+      // Find accounts using this webhook
+      try {
+        const d = await api('/accounts?limit=999');
+        const using = (d.accounts || []).filter(a => a.webhookIds?.includes(id)).map(a => a.id);
+        renderWhAccChecklist(using);
+      } catch (e) { renderWhAccChecklist([]); }
+    }
+
+    async function renderWhAccChecklist(selectedAccIds = []) {
+      const c = $('whAccList');
+      try {
+        const d = await api('/accounts?limit=999');
+        const accs = d.accounts || [];
+        if (accs.length === 0) {
+          c.innerHTML = '<div style="font-size:11px;color:var(--t3);text-align:center;padding:10px">Chưa có tài khoản mail nào</div>';
+          return;
+        }
+        c.innerHTML = accs.map(a => `
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;padding:2px 4px;border-radius:4px" class="wh-item">
+                <input type="checkbox" value="${escAttr(a.id)}" ${selectedAccIds.includes(a.id) ? 'checked' : ''}>
+                <span class="acc-av" style="width:20px;height:20px;font-size:10px">${(a.email || '?')[0].toUpperCase()}</span>
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.email)}</span>
+              </label>
+            `).join('');
+      } catch (e) { c.innerHTML = 'Lỗi...'; }
+    }
+
+    function closeWhMo() { $('whMo').classList.remove('on'); }
+
+    async function doWhSave() {
+      const nameInput = $('whName');
+      const urlInput = $('whUrl');
+      const name = nameInput.value.trim();
+      const url = urlInput.value.trim();
+
+      // Reset errors
+      nameInput.classList.remove('error');
+      urlInput.classList.remove('error');
+
+      let hasError = false;
+      if (!name) {
+        nameInput.classList.add('error');
+        toast('Lỗi', 'Vui lòng nhập Tên hiển thị', 'er');
+        hasError = true;
+      }
+      if (!url) {
+        urlInput.classList.add('error');
+        if (!hasError) toast('Lỗi', 'Vui lòng nhập Webhook URL', 'er');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      const accIds = Array.from($('whAccList').querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+      const filters = {
+        subject: $('whFilterSubject').value.trim(),
+        from: $('whFilterFrom').value.trim(),
+        text: $('whFilterText').value.trim()
+      };
+      const enabled = $('whEnabled').checked;
+
+      try {
+        const method = editingWhId ? 'PUT' : 'POST';
+        const endpoint = editingWhId ? `/webhooks/${editingWhId}` : '/webhooks';
+
+        const r = await api(endpoint, method, { name, url, accountIds: accIds, filters, enabled });
+        if (r.error) { toast('Lỗi', r.error, 'er'); return; }
+
+        toast('Thành công', 'Đã lưu webhook', 'ok');
+        closeWhMo();
+        renderWhs();
+      } catch (e) { toast('Lỗi', 'Không thể lưu', 'er'); }
+    }
+
+    async function delWh(id) {
+      if (!confirm('Xóa webhook này?')) return;
+      try {
+        await api(`/webhooks/${id}`, 'DELETE');
+        toast('Đã xóa', 'Webhook đã bị xóa', 'ok');
+        renderWhs();
+      } catch (e) { toast('Lỗi', 'Không thể xóa', 'er'); }
     }
 
     function renderAccs(accs) {
@@ -1728,8 +2804,9 @@
       <div class="acc-i"><div class="acc-av">${ini}</div><div style="min-width:0"><div class="acc-e">${esc(a.email)}</div><div class="acc-id">${a.id}${a.encrypted ? ' 🔒' : ''}</div></div></div>
       <div class="acc-s ${st}">${lb[st] || st}</div>
       <div class="acc-a" onclick="event.stopPropagation()">
-        ${st === 'connected' || st === 'connecting' ? `<button class="btn btn-d btn-ic" onclick="stopAcc('${a.id}')">⏹</button>` : `<button class="btn btn-ok btn-ic" onclick="startAcc('${a.id}')">▶</button>`}
-        <button class="btn btn-d btn-ic" onclick="delAcc('${a.id}')">🗑</button>
+        ${st === 'connected' || st === 'connecting' ? `<button class="btn btn-d btn-ic" onclick="stopAcc('${a.id}')" title="Dừng">⏹</button>` : `<button class="btn btn-ok btn-ic" onclick="startAcc('${a.id}')" title="Bắt đầu">▶</button>`}
+        <button class="btn btn-sm btn-ic" style="background:var(--input);color:var(--t2)" onclick="openEdit('${a.id}')" title="Sửa">✏️</button>
+        <button class="btn btn-d btn-ic" onclick="delAcc('${a.id}')" title="Xóa">🗑</button>
       </div></div>`}).join('');
     }
 
@@ -1756,62 +2833,69 @@
       curTab = t; $('tAll').className = `tab ${t === 'all' ? 'on' : ''}`; $('tAcc').className = `tab ${t === 'account' ? 'on' : ''}`;
       emailPage = 1;
       if (t === 'all') { selAcc = null; loadAccs(); if (inboxLoaded) loadInbox(); else showInboxPrompt(); }
-      else { if (selAcc) loadAccEmails(selAcc); else { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">👆</div><p>Chọn tài khoản</p></div>'; $('rpS').textContent = ''; $('emailPager').innerHTML = '' } }
+      else { if (selAcc) loadAccEmails(selAcc); else { $('mailView').innerHTML = '<div class="empty"><div class="ei-c">👆</div><p>Chọn tài khoản</p></div>'; $('rpS').textContent = ''; $('emailPager').innerHTML = '' } }
     }
-    function loadEmails() { if (curTab === 'all' && inboxLoaded) loadInbox(); else if (selAcc && curTab === 'account') loadAccEmails(selAcc) }
+    function loadEmails() {
+      if (curLTab !== 'acc') return;
+      if (curTab === 'all' && inboxLoaded) loadInbox(); else if (selAcc && curTab === 'account') loadAccEmails(selAcc)
+    }
 
     function showInboxPrompt() {
       inboxLoaded = false;
-      $('rpB').innerHTML = '<div class="empty" style="margin-top:20px"><div class="ei-c" style="font-size:48px;margin-bottom:16px">📨</div><p style="margin-bottom:20px;color:var(--t2);font-size:14px">Bạn đang xem tất cả hộp thư</p><button class="btn btn-p" onclick="inboxLoaded=true;loadInbox()" style="padding:10px 20px;font-size:14px">Tải & Khám phá ngay</button></div>';
+      $('mailView').innerHTML = '<div class="empty" style="margin-top:20px"><div class="ei-c" style="font-size:48px;margin-bottom:16px">📨</div><p style="margin-bottom:20px;color:var(--t2);font-size:14px">Bạn đang xem tất cả hộp thư</p><button class="btn btn-p" onclick="inboxLoaded=true;loadInbox()" style="padding:10px 20px;font-size:14px">Tải & Khám phá ngay</button></div>';
       $('rpS').textContent = '';
       $('emailPager').innerHTML = '';
     }
 
     // ── Unified Inbox ──
     async function loadInbox() {
-      $('rpB').innerHTML = '<div class="ld"><div class="spin"></div>Đang tải...</div>'; $('rpS').textContent = ''; $('emailPager').innerHTML = '';
+      $('mailView').innerHTML = '<div class="ld"><div class="spin"></div>Đang tải...</div>'; $('rpS').textContent = ''; $('emailPager').innerHTML = '';
       try {
         const d = await api(`/inbox?page=${emailPage}&limit=10`);
         $('rpS').textContent = `${d.totalAccounts} TK · ${d.totalCount} email`;
-        if (!d.emails?.length) { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">📭</div><p>Không có email trong 2 ngày qua</p></div>'; return }
+        if (!d.emails?.length) { $('mailView').innerHTML = '<div class="empty"><div class="ei-c">📭</div><p>Không có email trong 2 ngày qua</p></div>'; return }
         renderEmails(d.emails, true);
         renderPager('emailPager', d.page, d.totalPages, d.totalCount, p => { emailPage = p; loadInbox() });
-      } catch { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">⚠️</div><p>Lỗi tải</p></div>' }
+      } catch { $('mailView').innerHTML = '<div class="empty"><div class="ei-c">⚠️</div><p>Lỗi tải</p></div>' }
     }
 
     // ── Per-account ──
     function selAccount(id) { selAcc = id; curTab = 'account'; $('tAll').className = 'tab'; $('tAcc').className = 'tab on'; emailPage = 1; loadAccs(); loadAccEmails(id) }
     async function loadAccEmails(id) {
-      $('rpB').innerHTML = '<div class="ld"><div class="spin"></div>Đang tải...</div>'; $('rpS').textContent = ''; $('emailPager').innerHTML = '';
+      $('mailView').innerHTML = '<div class="ld"><div class="spin"></div>Đang tải...</div>'; $('rpS').textContent = ''; $('emailPager').innerHTML = '';
       try {
         const d = await api(`/accounts/${id}/emails?page=${emailPage}&limit=10`);
         $('rpS').textContent = d.email || '';
-        if (!d.emails?.length) { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">📭</div><p>Không có email</p></div>'; return }
+        if (!d.emails?.length) { $('mailView').innerHTML = '<div class="empty"><div class="ei-c">📭</div><p>Không có email</p></div>'; return }
         renderEmails(d.emails.map(e => ({ ...e, accountId: d.accountId, accountEmail: d.email })), false);
         renderPager('emailPager', d.page, d.totalPages, d.totalCount, p => { emailPage = p; loadAccEmails(id) });
-      } catch { $('rpB').innerHTML = '<div class="empty"><div class="ei-c">⚠️</div><p>Lỗi tải</p></div>' }
+      } catch { $('mailView').innerHTML = '<div class="empty"><div class="ei-c">⚠️</div><p>Lỗi tải</p></div>' }
     }
 
     function renderEmails(emails, showAcc) {
-      $('rpB').innerHTML = `<div class="el">${emails.map(e => {
-        const ur = !e.seen, from = e.from?.name || e.from?.address || '?', dt = e.date ? fmtDate(e.date) : '';
+      $('mailView').innerHTML = `<div class="el">${emails.map(e => {
+        const ur = !e.seen, dt = e.date ? fmtDate(e.date) : '';
+        const fromName = e.from?.name || '';
+        const fromAddr = e.from?.address || '?';
+        const fromDisplay = fromName ? `${fromName} <${fromAddr}>` : fromAddr;
         const to = e.accountEmail || '';
+
         return `<div class="ei ${ur ? 'ur' : ''}" onclick="openEm('${e.accountId}',${e.uid})">
           <span class="e-ic">${ur ? '📩' : '📧'}</span>
           <div class="e-c">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-              <div class="e-s">${esc(e.subject)}</div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px">
+              <div class="e-s">${esc(e.subject || '(Không có tiêu đề)')}</div>
               <span class="e-time">${dt}</span>
             </div>
             <div class="ei-m">
               <div class="ei-row">
                 <span class="label">Từ</span>
-                <span class="val">${esc(from)}</span>
+                <span class="val" title="${escAttr(fromAddr)}">${esc(fromDisplay)}</span>
               </div>
               <div class="ei-row to">
                 <span class="label">Đến</span>
                 <span class="val">${esc(to)}</span>
-                ${ur ? '<span style="color:var(--ac);font-weight:600;font-size:9px;margin-left:auto">● MỚI</span>' : ''}
+                ${ur ? '<span style="color:var(--ac);font-weight:600;font-size:9px;margin-left:auto;background:var(--ac-g);padding:1px 6px;border-radius:99px">MỚI</span>' : ''}
               </div>
             </div>
           </div>
@@ -1849,13 +2933,71 @@
     async function delAcc(id) { if (!confirm('Xóa tài khoản?')) return; try { await api(`/accounts/${id}`, 'DELETE'); delete wS[id]; if (selAcc === id) { selAcc = null; swTab('all') } toast('Đã xóa', 'Tài khoản đã bị xóa khỏi hệ thống', 'ok'); loadAccs(); updBanner() } catch { toast('Lỗi', 'Không thể xóa tài khoản', 'er') } }
 
     // ── Add Modal ──
-    function openAdd() {
+    async function openAdd() {
+      editingAccId = null;
       $('addMo').classList.add('on');
+      $('addMoT').textContent = '➕ Thêm tài khoản';
+      $('addBtn').textContent = 'Thêm & Bắt đầu';
+
+      $('nE').value = '';
+      $('nP').value = '';
+      $('nC').value = '';
       $('nPreset').value = 'gmail';
       $('nAuthType').value = 'app_password';
       onAuthTypeChange();
       onPresetChange();
+
+      // Populate Webhooks Checklist
+      await refreshWebhookChecklist();
       $('nE').focus()
+    }
+
+    async function openEdit(id) {
+      try {
+        const accs = await api('/accounts'); // Or use cache if available
+        const a = (accs.accounts || []).find(x => x.id === id);
+        if (!a) return;
+
+        editingAccId = id;
+        $('addMo').classList.add('on');
+        $('addMoT').textContent = '✏️ Sửa tài khoản';
+        $('addBtn').textContent = 'Lưu thay đổi';
+
+        $('nE').value = a.email || '';
+        $('nP').value = ''; // Always empty for security
+        $('nC').value = '';
+        $('nAuthType').value = a.authType || 'app_password';
+        $('nPreset').value = 'custom'; // Default to custom if we want to show existing host/port
+        $('nH').value = a.imapHost || '';
+        $('nPo').value = a.imapPort || 993;
+        $('nS').value = String(a.imapSecure !== false);
+
+        onAuthTypeChange();
+        onPresetChange();
+        await refreshWebhookChecklist(a.webhookIds || []);
+
+        $('nE').focus();
+      } catch (e) {
+        toast('Lỗi', 'Không thể tải thông tin tài khoản', 'er');
+      }
+    }
+
+    async function refreshWebhookChecklist(selectedIds = []) {
+      try {
+        const d = await api('/config');
+        webhooks = d.config?.webhooks || [];
+        const list = $('nWebhookList');
+        if (webhooks.length === 0) {
+          list.innerHTML = '<div style="font-size:11px;color:var(--t3);text-align:center;padding:10px">Chưa có webhook nào. Hãy thêm trong Cài đặt.</div>';
+          return;
+        }
+        list.innerHTML = webhooks.map(w => `
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;padding:2px 4px;border-radius:4px" class="wh-item">
+                <input type="checkbox" value="${escAttr(w.id)}" ${selectedIds.includes(w.id) ? 'checked' : ''}>
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(w.name || w.id)}</span>
+              </label>
+            `).join('');
+      } catch (e) { }
     }
     function onAuthTypeChange() {
       const t = $('nAuthType').value;
@@ -1884,7 +3026,7 @@
         }
       }
     }
-    function closeAdd() { $('addMo').classList.remove('on'); $('nE').value = ''; $('nP').value = ''; $('nC').value = ''; $('nH').value = ''; }
+    function closeAdd() { $('addMo').classList.remove('on'); editingAccId = null; }
     async function doAdd() {
       const e = $('nE').value.trim();
       const p = $('nP').value.trim();
@@ -1892,19 +3034,41 @@
       const t = $('nAuthType').value;
       const h = $('nH').value.trim(), po = Number($('nPo').value), s = $('nS').value === 'true';
 
-      if (!e || (t === 'cookie' ? !c : !p) || !h) { toast('Nhập đầy đủ thông tin', 'er'); return }
+      // Get selected webhookIds
+      const whIds = Array.from($('nWebhookList').querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+      if (!e || (!editingAccId && (t === 'cookie' ? !c : !p)) || !h) { toast('Lỗi', 'Nhập đầy đủ thông tin', 'er'); return }
+
       try {
-        const r = await api('/accounts', 'POST', {
+        const method = editingAccId ? 'PUT' : 'POST';
+        const endpoint = editingAccId ? `/accounts/${editingAccId}` : '/accounts';
+
+        const payload = {
           email: e,
-          appPassword: p,
           authType: t,
-          cookie: c,
           imapHost: h,
           imapPort: po,
           imapSecure: s,
-          enabled: true
-        }); if (r.error) { toast('Lỗi', r.error, 'er'); return } closeAdd(); toast('Thành công', `Đã thêm tài khoản ${e}`, 'ok'); if (r.account?.id) await api(`/accounts/${r.account.id}/start`, 'POST'); loadAccs(); setTimeout(loadEmails, 3000)
-      } catch { toast('Lỗi', 'Không thể thêm tài khoản', 'er') }
+          enabled: true,
+          webhookIds: whIds
+        };
+
+        if (p) payload.appPassword = p;
+        if (c) payload.cookie = c;
+
+        const r = await api(endpoint, method, payload);
+        if (r.error) { toast('Lỗi', r.error, 'er'); return }
+
+        closeAdd();
+        toast('Thành công', editingAccId ? `Đã cập nhật ${e}` : `Đã thêm ${e}`, 'ok');
+
+        if (!editingAccId && r.account?.id) {
+          await api(`/accounts/${r.account.id}/start`, 'POST');
+        }
+
+        loadAccs();
+        setTimeout(loadEmails, 1000);
+      } catch (err) { toast('Lỗi', 'Không thể thực hiện tác vụ', 'er') }
     }
 
     // ── Logs & Config ──
@@ -1916,7 +3080,10 @@
         const d = await api('/logs?limit=250');
         if (!d.logs?.length) { $('logsB').innerHTML = '<i style="color:var(--t3)">Không có log nào...</i>'; return; }
         $('logsB').innerHTML = d.logs.map(l => {
-          let c = '#cbd5e1'; if (l.level === 'error') c = '#ef4444'; else if (l.level === 'warn') c = '#f59e0b'; else if (l.level === 'debug') c = '#64748b';
+          let c = 'var(--t1)';
+          if (l.level === 'error') c = 'var(--err)';
+          else if (l.level === 'warn') c = 'var(--warn)';
+          else if (l.level === 'debug') c = 'var(--t3)';
           const t = new Date(l.time).toLocaleTimeString('vi-VN', { hour12: false });
           return `<div style="white-space:pre-wrap;margin-bottom:4px;color:${c}">[${t}] [${l.tag}] ${escAttr(l.message)}</div>`
         }).join('');
@@ -1928,30 +3095,31 @@
     async function openCfg() {
       $('cfgMo').classList.add('on');
       try {
-        const d = await api('/config'); const c = d.config || {};
-        $('cWebhook').value = c.webhookUrl || '';
+        const d = await api('/config');
+        const c = d.config || {};
+        $('cStagger').value = c.connectStaggerMs || 500;
       } catch { }
     }
+
+
     function closeCfg() { $('cfgMo').classList.remove('on') }
     async function saveCfg() {
       try {
         await api('/config', 'PUT', {
-          webhookUrl: $('cWebhook').value.trim()
+          connectStaggerMs: Number($('cStagger').value) || 500
         });
-        closeCfg(); toast('Cấu hình', 'Đã lưu cài đặt hệ thống', 'ok');
-        loadEmails();
+        closeCfg();
+        toast('Cấu hình', 'Đã lưu cài đặt hệ thống', 'ok');
       } catch { toast('Lỗi', 'Không thể lưu cấu hình', 'er') }
     }
 
     // ── Init ──
     document.addEventListener('DOMContentLoaded', () => {
-      loadTheme();
-      loadNotifs();
-      $('accLimitSelect').value = accLimit;
-      wsConnect(); loadAccs(); showInboxPrompt(); setInterval(refStats, 30000);
+      checkAuth();
       $('addMo').addEventListener('click', e => { if (e.target === e.currentTarget) closeAdd() });
       $('emMo').addEventListener('click', e => { if (e.target === e.currentTarget) closeEm() });
       $('nP').addEventListener('keydown', e => { if (e.key === 'Enter') doAdd() });
+      $('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin() });
     });
   </script>
 </body>

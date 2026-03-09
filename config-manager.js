@@ -8,7 +8,7 @@ import { log } from "./logger.js";
 const CONFIG_FILE = path.resolve("./config.json");
 
 const DEFAULTS = {
-    webhookUrl: "",
+    webhooks: [], // Array of { id, name, url, filters }
     imapHost: "imap.gmail.com",
     imapPort: 993,
     imapSecure: true,
@@ -72,7 +72,7 @@ export function getConfig() {
 }
 
 export function updateConfig(updates) {
-    const allowed = ["webhookUrl", "imapHost", "imapPort", "imapSecure", "connectStaggerMs", "logLevel", "pollIntervalMs"];
+    const allowed = ["webhooks", "imapHost", "imapPort", "imapSecure", "connectStaggerMs", "logLevel", "pollIntervalMs", "filterStartDate", "filterEndDate"];
     for (const key of allowed) {
         if (updates[key] !== undefined) {
             config[key] = updates[key];

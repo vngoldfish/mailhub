@@ -1,0 +1,22 @@
+{
+    "admin": {
+        "password": "admin123",
+        "role": "admin"
+    },
+    "manager": {
+        "password": "manager123",
+        "role": "editor"
+    },
+    "staff": {
+        "password": "staff123",
+        "role": "editor"
+    },
+    "viewer1": {
+        "password": "view123",
+        "role": "viewer"
+    },
+    "viewer2": {
+        "password": "view456",
+        "role": "viewer"
+    }
+}
